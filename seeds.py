@@ -9,7 +9,7 @@ def fixseeds():
     
     @return: features and labels of the seeds dataset
     """
-    seeds = pd.read_csv('seeds_dataset.txt', header = None, sep='\t')
+    seeds = pd.read_csv('datasets/seeds_dataset.txt', header = None, sep='\t')
     seeds[[7]] = seeds[[7]].add(-1)
     x = seeds[[0, 1, 2, 3, 4, 5, 6]]
     y = seeds.loc[:,7]
