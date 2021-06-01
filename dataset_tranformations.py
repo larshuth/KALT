@@ -8,6 +8,8 @@ from sklearn.decomposition import PCA
 import pandas as pd
 from sklearn.preprocessing import normalize
 
+import streamlit as st
+
 
 def happiness_alcohol_consumption(location="/home/lars/Downloads/", pca_bool=True):
     """
@@ -25,18 +27,17 @@ def happiness_alcohol_consumption(location="/home/lars/Downloads/", pca_bool=Tru
     # Scaling the data to bring all the attributes to a comparable level
     scaler = StandardScaler()
     x_scaled = scaler.fit_transform(x)
+    # Normalizing the data so that
+    # the data approximately follows a Gaussian distribution
+    x_normalized = normalize(x_scaled)
 
     if pca_bool:
-        # Normalizing the data so that
-        # the data approximately follows a Gaussian distribution
-        x_normalized = normalize(x_scaled)
-
         pca = PCA(n_components=3)
         x_principal = pca.fit_transform(x_normalized)
         x_principal = pd.DataFrame(x_principal)
         x_principal.columns = ["P1", "P2", "P3"]
     else:
-        x_principal = x
+        x_principal = x_normalized
 
     return x, x_principal
 
@@ -69,8 +70,9 @@ def plotting_happiness_and_alcohol(dataset, labels, x_var="", y_var=""):
     k = plt.scatter(dataset[x_var], dataset[y_var], color="k")
 
     # according to the colour vector defined
-    plt.figure(figsize=(9, 9))
+    fig = plt.figure(figsize=(9, 9))
     plt.scatter(dataset[x_var], dataset[y_var], c=cvec)
-
     plt.show()
+
+    st.pyplot(fig)
     return
