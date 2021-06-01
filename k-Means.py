@@ -30,12 +30,12 @@ def k_Means(dataset_x, dataset_y = None, clusters = 3, feature_1 = 0, feature_2 
     y_axis = dataset_x[:,feature_2]
     if labeled:
         fig, (ax1, ax2) = plt.subplots(ncols=2, sharey=True)
-        sns.scatterplot(x_axis, y_axis, hue = result, ax=ax1)
-        sns.scatterplot(x_axis, y_axis, hue = dataset_y, ax=ax2)
+        plt.scatter(x_axis, y_axis, c = result, ax=ax1)
+        plt.scatter(x_axis, y_axis, c = dataset_y, ax=ax2)
         plt.show()
     else:
         plt.figure(figsize = (10, 8))
-        sns.scatterplot(x_axis, y_axis, hue = result)
+        plt.scatter(x_axis, y_axis, c = result)
         plt.show()
 
 
