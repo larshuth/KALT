@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 
-def fixseeds():
+def fixseeds(pca=True):
     """
     Returns the features and labels of the seeds dataset
     
@@ -13,19 +13,13 @@ def fixseeds():
     seeds[[7]] = seeds[[7]].add(-1)
     x = seeds[[0, 1, 2, 3, 4, 5, 6]]
     y = seeds.loc[:,7]
+    if pca:
+        scaler = StandardScaler()
+        segmentation_std = scaler.fit_transform(x)
+        pca = PCA(n_components = 3)
+        pca.fit(segmentation_std)
+        scores_pca = pca.transform(segmentation_std)
+        x = scores_pca
     return x, y
 
-
-def pca_for_seeds(x):
-    """
-    Returns the features of the seeds dataset after using the pca algorithm
     
-    @param x: original features of the seeds dataset
-    @return: features of the seeds dataset after using the pca algorithm
-    """
-    scaler = StandardScaler()
-    segmentation_std = scaler.fit_transform(x)
-    pca = PCA(n_components = 3)
-    pca.fit(segmentation_std)
-    scores_pca = pca.transform(segmentation_std)
-    return scores_pca
