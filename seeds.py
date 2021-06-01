@@ -7,6 +7,8 @@ def fixseeds(pca=True):
     """
     Returns the features and labels of the seeds dataset
     
+    @param pca: uses pca und features
+    
     @return: features and labels of the seeds dataset
     """
     seeds = pd.read_csv('datasets/seeds_dataset.txt', header = None, sep='\t')
