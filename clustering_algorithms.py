@@ -41,14 +41,26 @@ def density_based_spatial_clustering_of_applications_with_noise(
 def main(algorithm="dbscan", dataset="happiness and alcohol", pca_bool=True):
     print("pick a god and pray")
 
+    algorithms = {"dbscan": density_based_spatial_clustering_of_applications_with_noise}
+    datasets = {
+        "happiness and alcohol": dataset_tranformations.happiness_alcohol_consumption,
+        "seeds": dataset_tranformations.fixseeds,
+        "HCV Impfungen, Erkrankungen und mehr": dataset_tranformations.hcvdataset,
+        "liver disorder": dataset_tranformations.liver_disorders
+    }
+
     st.write(
         """
-    # Hapiness and Alcohol.
+    # Sata Dience.
     
     Correlation?
     Clustering?
     """
     )
+
+    dataset_choice = st.selectbox("Which dataset?", tuple(ds for ds in datasets))
+    algorithm_choice = st.selectbox("Which algorithm?", tuple(alg for alg in algorithms))
+
 
     pca_string = st.selectbox("Use PCA for cluster calculation?", ("Yes", "No"))
     if pca_string == "Yes":
@@ -63,18 +75,15 @@ def main(algorithm="dbscan", dataset="happiness and alcohol", pca_bool=True):
         "Min Neighborhood Size", min_value=1.0, max_value=15.0, value=5.0, step=1.0
     )
 
-    algorithms = {"dbscan": density_based_spatial_clustering_of_applications_with_noise}
-    datasets = {
-        "happiness and alcohol": dataset_tranformations.happiness_alcohol_consumption
-    }
-
-    x, x_principal = datasets[dataset](location="./datasets/", pca_bool=pca_bool)
+    x, y = datasets[dataset_choice](pca_bool=pca_bool)
+    print(x)
     db, labels = algorithms[algorithm](
-        x_principal, epsilon_neighborhood=epsilon, cluster_neighborhood=size
+        x, epsilon_neighborhood=epsilon, cluster_neighborhood=size
     )
     dataset_tranformations.plotting_happiness_and_alcohol(
-        x, labels, "HappinessScore", "HDI"
+        x, labels, x.columns[0], x.columns[1]
     )
+
     return 0
 
 

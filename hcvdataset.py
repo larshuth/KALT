@@ -8,7 +8,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 
 
-def hcvdataset(file_path="hcvdat0.csv", use_pca=True, n_components=9):
+def hcvdataset(file_path="./datasets/hcvdat0.csv", use_pca=True, n_components=9):
     """
     Returns the features, or the features with pca, and labels of the hcv dataset as a tuple of a np.array.
     Please keep in mind that this dataset is unlabeled !!!
