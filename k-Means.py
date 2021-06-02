@@ -65,6 +65,13 @@ def k_Means_acc(dataset_x, dataset_y = None, clusters = None):
         return davies_bouldin_score(dataset_x, result)
 
 
+st.write("""
+    # Tolga
+    ## Datascience project
+    ### K-Means    
+    """
+    )    
+    
 features, labels = fixseeds()
 clusters = st.slider('Amount of Clusters', min_value=1, max_value=7, value=int)
 k_Means(dataset_x = features, dataset_y = None, clusters = clusters, feature_1 = 0, feature_2 = 1)
