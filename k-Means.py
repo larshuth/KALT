@@ -1,10 +1,12 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import streamlit as st
 from sklearn.cluster import KMeans
 import seaborn as sns
 sns.set()
 from sklearn.metrics import davies_bouldin_score, jaccard_score
+from seeds import fixseeds
 
 
 def k_Means(dataset_x, dataset_y = None, clusters = 3, feature_1 = 0, feature_2 = 1):
@@ -32,10 +34,10 @@ def k_Means(dataset_x, dataset_y = None, clusters = 3, feature_1 = 0, feature_2 
         fig, (ax1, ax2) = plt.subplots(ncols=2, sharey=True)
         plt.scatter(x_axis, y_axis, c = result, ax=ax1)
         plt.scatter(x_axis, y_axis, c = dataset_y, ax=ax2)
-        plt.show()
+        st.pyplot(fig)
     else:
-        plt.figure(figsize = (10, 8))
-        plt.scatter(x_axis, y_axis, c = result)
+        fig, ax = plt.subplots() 
+        ax = plt.scatter(x_axis, y_axis, c = result)
         plt.show()
 
 
@@ -63,6 +65,6 @@ def k_Means_acc(dataset_x, dataset_y = None, clusters = None):
         return davies_bouldin_score(dataset_x, result)
 
 
-
-
-
+features, labels = fixseeds()
+clusters = st.slider('Amount of Clusters', min_value=1, max_value=7, value=int)
+k_Means(dataset_x = features, dataset_y = None, clusters = clusters, feature_1 = 0, feature_2 = 1)
