@@ -73,5 +73,5 @@ st.write("""
     )    
     
 features, labels = fixseeds()
-clusters = st.slider('Amount of Clusters', min_value=1, max_value=7, value=int)
+clusters = st.slider('Amount of Clusters', min_value=1, max_value=7, step=1)
 k_Means(dataset_x = features, dataset_y = None, clusters = clusters, feature_1 = 0, feature_2 = 1)

@@ -71,6 +71,11 @@ def plotting_happiness_and_alcohol(dataset, labels, x_var="", y_var=""):
 
     # according to the colour vector defined
     fig = plt.figure(figsize=(9, 9))
+    plt.clf()
+    ax = plt.gca()
+    ax.set_facecolor('#eff2f7')
+    plt.grid(color='#fff')
+
     plt.scatter(dataset[x_var], dataset[y_var], c=cvec)
     plt.show()
 
