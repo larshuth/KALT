@@ -19,7 +19,7 @@ def liver_disorders(pca_bool=True):
     @return: processed liver disorders dataset according to pca_bool
     """
 
-    liver_disorders = pd.read_csv('./KALT/datasets/liver_disorders.data', sep=',', names=[
+    liver_disorders = pd.read_csv('./datasets/liver_disorders.data', sep=',', names=[
         "Mean Corpuscular Volume",
         "Alkaline Phosphotase",
         "Alamine Aminotransferase",
