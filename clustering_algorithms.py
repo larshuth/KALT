@@ -58,7 +58,10 @@ def main(algorithm="dbscan", dataset="happiness and alcohol", pca_bool=True):
     """
     )
 
-    dataset = st.selectbox("Use PCA for cluster calculation?", ("Yes", "No"))
+    dataset_choice = st.selectbox("Which dataset?", tuple(ds for ds in datasets))
+    algorithm_choice = st.selectbox("Which algorithm?", tuple(alg for alg in algorithms))
+
+
     pca_string = st.selectbox("Use PCA for cluster calculation?", ("Yes", "No"))
     if pca_string == "Yes":
         pca_bool = True
@@ -72,13 +75,15 @@ def main(algorithm="dbscan", dataset="happiness and alcohol", pca_bool=True):
         "Min Neighborhood Size", min_value=1.0, max_value=15.0, value=5.0, step=1.0
     )
 
-    x, x_principal = datasets[dataset](location="./datasets/", pca_bool=pca_bool)
+    x, y = datasets[dataset_choice](pca_bool=pca_bool)
+    print(x)
     db, labels = algorithms[algorithm](
-        x_principal, epsilon_neighborhood=epsilon, cluster_neighborhood=size
+        x, epsilon_neighborhood=epsilon, cluster_neighborhood=size
     )
     dataset_tranformations.plotting_happiness_and_alcohol(
-        x, labels, "HappinessScore", "HDI"
+        x, labels, x.columns[0], x.columns[1]
     )
+
     return 0
 
 

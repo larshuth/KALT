@@ -12,7 +12,7 @@ from sklearn.preprocessing import normalize
 import streamlit as st
 
 
-def happiness_alcohol_consumption(file_path="/home/lars/Downloads/HappinessAlcoholConsumption.csv", pca_bool=True):
+def happiness_alcohol_consumption(file_path="./datasets/HappinessAlcoholConsumption.csv", pca_bool=True):
     """
     Transforms the "Happiness and Alcohol Consumption" dataset,
     https://www.kaggle.com/marcospessotto/happiness-and-alcohol-consumption
@@ -36,7 +36,7 @@ def happiness_alcohol_consumption(file_path="/home/lars/Downloads/HappinessAlcoh
         pca = PCA(n_components=components)
         x_principal = pca.fit_transform(x_normalized)
         x_principal = pd.DataFrame(x_principal)
-        x_principal.columns = ["P1", "P2", "P3"]
+        x_principal.columns = ["1", "2", "3"]
     else:
         x_principal = x_normalized
 
@@ -68,7 +68,7 @@ def fixseeds(file_path="./datasets/seeds_dataset.txt", pca_bool=True):
     return x, y
 
 
-def hcvdataset(file_path="./datasets/hcvdat0.csv", use_pca=True):
+def hcvdataset(file_path="./datasets/hcvdat0.csv", pca_bool=True):
     """
     Returns the features, or the features with pca, and labels of the hcv dataset as a tuple of a np.array.
     Please keep in mind that this dataset is unlabeled !!!
@@ -90,7 +90,7 @@ def hcvdataset(file_path="./datasets/hcvdat0.csv", use_pca=True):
     scaler = StandardScaler()
     segmentation_std = scaler.fit_transform(X)
 
-    if use_pca:
+    if pca_bool:
         # use pca
         components = get_components(segmentation_std)
         pca = PCA(n_components=components)
