@@ -38,7 +38,7 @@ def k_Means(dataset_x, dataset_y = None, clusters = 3, feature_1 = 0, feature_2 
     else:
         fig, ax = plt.subplots() 
         ax = plt.scatter(x_axis, y_axis, c = result)
-        plt.show()
+        st.pyplot(fig)
 
 
 def k_Means_acc(dataset_x, dataset_y = None, clusters = None):
