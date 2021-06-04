@@ -1,10 +1,9 @@
 import numpy as np
-
-import dataset_tranformations
-
-from sklearn.cluster import DBSCAN
-
 import streamlit as st
+import dataset_tranformations
+import plot_clustering
+
+from sklearn.cluster import DBSCAN, MeanShift, KMeans, estimate_bandwidth
 
 
 def density_based_spatial_clustering_of_applications_with_noise(
@@ -38,10 +37,36 @@ def density_based_spatial_clustering_of_applications_with_noise(
     return db, labels
 
 
+def mean_shift(data, bandwidth):
+    """
+    Performs Mean Shift clustering on given dataset.
+    Based on: 
+    https://scikit-learn.org/stable/modules/generated/sklearn.cluster.MeanShift.html
+
+    @param data: processed dataset (e.g. liver disorders dataset)
+    @param bandwidth: distance of kernel function or size of "window", either automatically estimated or given by user
+    @return mean shift instance, index of cluster each data point belongs to, number of clusters
+    """
+
+    #bandwidth = estimate_bandwidth(data)
+    mean_shift = MeanShift(bandwidth=bandwidth)
+
+    mean_shift.fit(data)
+    labels = mean_shift.labels_
+    cluster_centers = mean_shift.cluster_centers_
+    labels_unique = np.unique(labels)
+    n_clusters = len(labels_unique)
+
+    return mean_shift, labels, n_clusters
+
+
 def main(algorithm="dbscan", dataset="happiness and alcohol", pca_bool=True):
     print("pick a god and pray")
 
-    algorithms = {"dbscan": density_based_spatial_clustering_of_applications_with_noise}
+    algorithms = {
+        "dbscan": density_based_spatial_clustering_of_applications_with_noise,
+        "mean shift": mean_shift
+    }
     datasets = {
         "happiness and alcohol": dataset_tranformations.happiness_alcohol_consumption,
         "seeds": dataset_tranformations.fixseeds,
@@ -68,6 +93,7 @@ def main(algorithm="dbscan", dataset="happiness and alcohol", pca_bool=True):
     else:
         pca_bool = False
 
+    # for dbscan
     epsilon = st.slider(
         "Epsilon Neighborhood", min_value=0.05, max_value=1.0, value=0.3, step=0.05
     )
@@ -75,14 +101,29 @@ def main(algorithm="dbscan", dataset="happiness and alcohol", pca_bool=True):
         "Min Neighborhood Size", min_value=1.0, max_value=15.0, value=5.0, step=1.0
     )
 
-    x, y = datasets[dataset_choice](pca_bool=pca_bool)
-    print(x)
-    db, labels = algorithms[algorithm](
-        x, epsilon_neighborhood=epsilon, cluster_neighborhood=size
+    # for mean shift
+    bandwidth = st.slider(
+       'Bandwidth', min_value=1.0, max_value=4.0, value=float(round(estimate_bandwidth(datasets[dataset_choice](pca_bool=pca_bool)[0]), 2))
     )
-    dataset_tranformations.plotting_happiness_and_alcohol(
-        x, labels, x.columns[0], x.columns[1]
-    )
+
+    
+    if algorithm_choice == "dbscan":
+        x, y = datasets[dataset_choice](pca_bool=pca_bool)
+        print(x)
+        db, labels = algorithms[algorithm](
+            x, epsilon_neighborhood=epsilon, cluster_neighborhood=size
+        )
+        dataset_tranformations.plotting_happiness_and_alcohol(
+            x, labels, x.columns[0], x.columns[1]
+        )
+    elif algorithm_choice == "mean shift":
+        mean_shift_data = datasets[dataset_choice](pca_bool=pca_bool)[0]
+        plot_clustering.plotting_mean_shift(
+            mean_shift(mean_shift_data, bandwidth)[0], 
+            mean_shift(mean_shift_data, bandwidth)[1], 
+            mean_shift(mean_shift_data, bandwidth)[2], 
+            mean_shift_data
+        )
 
     return 0
 

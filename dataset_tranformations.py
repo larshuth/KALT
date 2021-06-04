@@ -1,15 +1,11 @@
 import numpy as np
-
 import matplotlib.pyplot as plt
+import pandas as pd
+import streamlit as st
 
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
-from sklearn import preprocessing
-
-import pandas as pd
 from sklearn.preprocessing import normalize
-
-import streamlit as st
 
 
 def happiness_alcohol_consumption(file_path="./datasets/HappinessAlcoholConsumption.csv", pca_bool=True):
@@ -128,7 +124,7 @@ def liver_disorders(file_path="./datasets/liver_disorders.data", pca_bool=True):
 
     # reduce dimensionality
     if pca_bool:
-        scaler = preprocessing.StandardScaler()
+        scaler = StandardScaler()
         data_scaled = scaler.fit_transform(liver_disorders)
         # kriege normalized atm nur ein cluster :(
         # data_scaled = preprocessing.normalize(data_scaled)

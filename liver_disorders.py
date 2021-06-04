@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import streamlit as st
+import dataset_tranformations as data
 
 from itertools import cycle
 from sklearn import preprocessing, metrics
@@ -130,9 +131,11 @@ def get_components(data):
         else:
             pass
 
+dataset = data.liver_disorders()[0]
 # slider 
 # https://docs.streamlit.io/en/stable/api.html
-bandwidth = st.slider('Bandwidth', min_value=1.0, max_value=4.0, value=float(round(estimate_bandwidth(liver_disorders()), 2)))
+bandwidth = st.slider('Bandwidth', min_value=1.0, max_value=4.0, value=float(round(estimate_bandwidth(dataset), 2)))
 
 # plot clustering
-plotting_mean_shift(mean_shift(liver_disorders(), bandwidth)[0], mean_shift(liver_disorders(), bandwidth)[1], mean_shift(liver_disorders(), bandwidth)[2], liver_disorders())
+#plotting_mean_shift(mean_shift(liver_disorders(), bandwidth)[0], mean_shift(liver_disorders(), bandwidth)[1], mean_shift(liver_disorders(), bandwidth)[2], liver_disorders())
+plotting_mean_shift(mean_shift(dataset, bandwidth)[0], mean_shift(dataset, bandwidth)[1], mean_shift(dataset, bandwidth)[2], dataset)
