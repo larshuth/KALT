@@ -42,41 +42,32 @@ def plotting_mean_shift(mean_shift, labels, n_clusters, data):
     st.pyplot(fig)
 
 
-def plotting_dbscan(dbscan, labels, n_clusters, dataset, x_var="", y_var=""):
+def plotting_dbscan(dbscan, labels, n_clusters, data, x_var="", y_var=""):
     """
     Ploting of the "Happiness and Alcohol Consumption" dataset, based on
     https://www.geeksforgeeks.org/implementing-dbscan-algorithm-using-sklearn/
     """
 
-    # Building the label to colour mapping
-    colours = {}
-
-    unique_labels = set(labels)
-    colors = [plt.cm.Spectral(each) for each in np.linspace(0, 1, len(unique_labels))]
-
-    colours[-1] = "k"
-
-    # Building the colour vector for each data point
-    cvec = [colors[label] for label in labels]
-
-    # For the construction of the legend of the plot
-    if not x_var and y_var:
-        x_var = labels[0]
-        y_var = labels[1]
-
-    r = plt.scatter(dataset[x_var], dataset[y_var], color="r")
-    g = plt.scatter(dataset[x_var], dataset[y_var], color="g")
-    b = plt.scatter(dataset[x_var], dataset[y_var], color="b")
-    k = plt.scatter(dataset[x_var], dataset[y_var], color="k")
-
-    # according to the colour vector defined
     fig = plt.figure(figsize=(9, 9))
     plt.clf()
+
+    # farben ändern...
+    colors = cycle('bcmrgykbgrcmykbgrcmykbgrcmyk')
+    for k, col in zip(range(n_clusters), colors):
+        my_members = labels == k
+        plt.plot(data[my_members, 0], data[my_members, 1], col + '.', markeredgecolor='#fff', markeredgewidth=0.7,
+                 markersize=8)
+
+    plt.title(f'DBSCAN - Estimated number of clusters: {n_clusters}')
+    # according to the colour vector defined
     ax = plt.gca()
+    ax.set_xlim(-1, 1)
+    ax.set_ylim(-1, 1)
+    ax.spines['right'].set_visible(False)
+    ax.spines['top'].set_visible(False)
     ax.set_facecolor('#eff2f7')
     plt.grid(color='#fff')
 
-    plt.scatter(dataset[x_var], dataset[y_var], c=cvec)
     plt.show()
 
     st.pyplot(fig)

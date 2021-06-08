@@ -7,7 +7,7 @@ from sklearn.cluster import DBSCAN, MeanShift, KMeans, estimate_bandwidth
 
 
 def density_based_spatial_clustering_of_applications_with_noise(
-    dataset_x, dataset_y=None, dbscan_params=None
+    dataset_x, dbscan_params, dataset_y=None
 ):
     """
     Performs density-based clustering of applications with noise on datasets transformed as we as a group we agreed
@@ -18,9 +18,8 @@ def density_based_spatial_clustering_of_applications_with_noise(
     @param dataset_y: labels of the dataset as an array (not required, default = none)
     @param dbscan_params: epsilon neighborhood and cluster neighborhood as required for dbscan
     """
+    print('yeehaw')
 
-    if dbscan_params is None:
-        dbscan_params = {'epsilon_neighborhood': 0.3, 'clustering_neighborhood': 5}
     db = DBSCAN(eps=dbscan_params['epsilon_neighborhood'], min_samples=dbscan_params['clustering_neighborhood']).fit(
         dataset_x
     )
@@ -111,7 +110,6 @@ def main(algorithm="dbscan", dataset="happiness and alcohol", pca_bool=True):
             'epsilon_neighborhood': epsilon,
             'clustering_neighborhood': clustering_neighborhood
         }
-
     elif algorithm_choice == "mean shift":
         # for mean shift
         bandwidth = st.slider(
