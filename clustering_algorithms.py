@@ -18,8 +18,6 @@ def density_based_spatial_clustering_of_applications_with_noise(
     @param dataset_y: labels of the dataset as an array (not required, default = none)
     @param dbscan_params: epsilon neighborhood and cluster neighborhood as required for dbscan
     """
-    print('yeehaw')
-
     db = DBSCAN(eps=dbscan_params['epsilon_neighborhood'], min_samples=dbscan_params['clustering_neighborhood']).fit(
         dataset_x
     )

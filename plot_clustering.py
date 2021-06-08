@@ -53,7 +53,7 @@ def plotting_dbscan(dbscan, labels, n_clusters, data, x_var="", y_var=""):
 
     # farben ändern...
     colors = cycle('bcmrgykbgrcmykbgrcmykbgrcmyk')
-    for k, col in zip(range(n_clusters), colors):
+    for k, col in zip(range(-1, n_clusters), colors):
         my_members = labels == k
         plt.plot(data[my_members, 0], data[my_members, 1], col + '.', markeredgecolor='#fff', markeredgewidth=0.7,
                  markersize=8)
@@ -61,8 +61,6 @@ def plotting_dbscan(dbscan, labels, n_clusters, data, x_var="", y_var=""):
     plt.title(f'DBSCAN - Estimated number of clusters: {n_clusters}')
     # according to the colour vector defined
     ax = plt.gca()
-    ax.set_xlim(-1, 1)
-    ax.set_ylim(-1, 1)
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
     ax.set_facecolor('#eff2f7')

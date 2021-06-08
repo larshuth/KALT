@@ -78,8 +78,6 @@ def hcvdataset(file_path="./datasets/hcvdat0.csv", pca_bool=True):
     X = X.drop(columns=['Category', 'Sex']).merge(X_tmp, left_index=True, right_index=True)
     # since we have non-existent values we fill them with 0s
     X = X.fillna(0)
-    print(X_tmp, '\n', type(X_tmp))
-    print('\n', X, '\n', type(X))
 
     """still unsure, if standardscaler should be performed generally or not"""
     # Standardize features by removing the mean and scaling to unit variance
