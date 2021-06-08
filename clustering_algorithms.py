@@ -7,7 +7,7 @@ from sklearn.cluster import DBSCAN, MeanShift, KMeans, estimate_bandwidth
 
 
 def density_based_spatial_clustering_of_applications_with_noise(
-    dataset_x, dataset_y=None, epsilon_neighborhood=0.3, cluster_neighborhood=5
+    dataset_x, dataset_y=None, dbscan_params=None
 ):
     """
     Performs density-based clustering of applications with noise on datasets transformed as we as a group we agreed
@@ -16,11 +16,12 @@ def density_based_spatial_clustering_of_applications_with_noise(
 
     @param dataset_x: features of the dataset as an array (required)
     @param dataset_y: labels of the dataset as an array (not required, default = none)
-    @param epsilon_neighborhood: max distance to still be considered a neighbor (not required, default = 0.3)
-    @param cluster_neighborhood: number of points in a neighborhood to make a cluster (not required, default = 5)
+    @param dbscan_params: epsilon neighborhood and cluster neighborhood as required for dbscan
     """
 
-    db = DBSCAN(eps=epsilon_neighborhood, min_samples=cluster_neighborhood).fit(
+    if dbscan_params is None:
+        dbscan_params = {'epsilon_neighborhood': 0.3, 'clustering_neighborhood': 5}
+    db = DBSCAN(eps=dbscan_params['epsilon_neighborhood'], min_samples=dbscan_params['clustering_neighborhood']).fit(
         dataset_x
     )
     core_samples_mask = np.zeros_like(db.labels_, dtype=bool)
@@ -34,10 +35,10 @@ def density_based_spatial_clustering_of_applications_with_noise(
 
     print("Estimated number of clusters: %d" % n_clusters_)
     print("Estimated number of noise points: %d" % n_noise_)
-    return db, labels
+    return db, labels, n_clusters_
 
 
-def mean_shift(data, bandwidth):
+def mean_shift(data, meanshift_params):
     """
     Performs Mean Shift clustering on given dataset.
     Based on: 
@@ -49,7 +50,7 @@ def mean_shift(data, bandwidth):
     """
 
     #bandwidth = estimate_bandwidth(data)
-    mean_shift = MeanShift(bandwidth=bandwidth)
+    mean_shift = MeanShift(bandwidth=meanshift_params['bandwidth'])
 
     mean_shift.fit(data)
     labels = mean_shift.labels_
@@ -63,10 +64,17 @@ def mean_shift(data, bandwidth):
 def main(algorithm="dbscan", dataset="happiness and alcohol", pca_bool=True):
     print("pick a god and pray")
 
+    db_scan_string = 'DBSCAN'
+
     algorithms = {
-        "dbscan": density_based_spatial_clustering_of_applications_with_noise,
+        db_scan_string: density_based_spatial_clustering_of_applications_with_noise,
         "mean shift": mean_shift
     }
+    plotting_algorithms = {
+        db_scan_string: plot_clustering.plotting_dbscan,
+        "mean shift": plot_clustering.plotting_mean_shift
+    }
+
     datasets = {
         "happiness and alcohol": dataset_tranformations.happiness_alcohol_consumption,
         "seeds": dataset_tranformations.fixseeds,
@@ -78,52 +86,49 @@ def main(algorithm="dbscan", dataset="happiness and alcohol", pca_bool=True):
         """
     # Sata Dience.
     
-    Correlation?
-    Clustering?
+    Colleration?
+    Culstering?
     """
     )
 
     dataset_choice = st.selectbox("Which dataset?", tuple(ds for ds in datasets))
     algorithm_choice = st.selectbox("Which algorithm?", tuple(alg for alg in algorithms))
 
-
     pca_string = st.selectbox("Use PCA for cluster calculation?", ("Yes", "No"))
     if pca_string == "Yes":
         pca_bool = True
     else:
         pca_bool = False
-
-    # for dbscan
-    epsilon = st.slider(
-        "Epsilon Neighborhood", min_value=0.05, max_value=1.0, value=0.3, step=0.05
-    )
-    size = st.slider(
-        "Min Neighborhood Size", min_value=1.0, max_value=15.0, value=5.0, step=1.0
-    )
-
-    # for mean shift
-    bandwidth = st.slider(
-       'Bandwidth', min_value=1.0, max_value=4.0, value=float(round(estimate_bandwidth(datasets[dataset_choice](pca_bool=pca_bool)[0]), 2))
-    )
-
     
-    if algorithm_choice == "dbscan":
-        x, y = datasets[dataset_choice](pca_bool=pca_bool)
-        print(x)
-        db, labels = algorithms[algorithm](
-            x, epsilon_neighborhood=epsilon, cluster_neighborhood=size
+    if algorithm_choice == db_scan_string:
+        epsilon = st.slider(
+            "Epsilon Neighborhood", min_value=0.05, max_value=1.0, value=0.3, step=0.05
         )
-        dataset_tranformations.plotting_happiness_and_alcohol(
-            x, labels, x.columns[0], x.columns[1]
+        clustering_neighborhood = st.slider(
+            "Min Neighborhood Size", min_value=1.0, max_value=15.0, value=5.0, step=1.0
         )
+        algo_parameters = {
+            'epsilon_neighborhood': epsilon,
+            'clustering_neighborhood': clustering_neighborhood
+        }
+
     elif algorithm_choice == "mean shift":
-        mean_shift_data = datasets[dataset_choice](pca_bool=pca_bool)[0]
-        plot_clustering.plotting_mean_shift(
-            mean_shift(mean_shift_data, bandwidth)[0], 
-            mean_shift(mean_shift_data, bandwidth)[1], 
-            mean_shift(mean_shift_data, bandwidth)[2], 
-            mean_shift_data
+        # for mean shift
+        bandwidth = st.slider(
+            'Bandwidth', min_value=1.0, max_value=4.0,
+            value=float(round(estimate_bandwidth(datasets[dataset_choice](pca_bool=pca_bool)[0]), 2))
         )
+        algo_parameters = {
+            'bandwidth': bandwidth,
+        }
+
+    x, y = datasets[dataset_choice](pca_bool=pca_bool)
+
+    fitted_data, labels, n_clusters = algorithms[algorithm_choice](
+        x, algo_parameters
+    )
+
+    plotting_algorithms[algorithm_choice](fitted_data, labels, n_clusters, x)
 
     return 0
 

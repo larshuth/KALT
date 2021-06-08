@@ -28,11 +28,10 @@ def happiness_alcohol_consumption(file_path="./datasets/HappinessAlcoholConsumpt
     x_normalized = normalize(x_scaled)
 
     if pca_bool:
-        components = get_components(x_scaled)
+        components = get_components(x_normalized)
         pca = PCA(n_components=components)
-        x_principal = pca.fit_transform(x_normalized)
-        x_principal = pd.DataFrame(x_principal)
-        x_principal.columns = ["1", "2", "3"]
+        pca.fit_transform(x_normalized)
+        x_principal = pca.transform(x_normalized)
     else:
         x_principal = x_normalized
 
@@ -79,6 +78,8 @@ def hcvdataset(file_path="./datasets/hcvdat0.csv", pca_bool=True):
     X = X.drop(columns=['Category', 'Sex']).merge(X_tmp, left_index=True, right_index=True)
     # since we have non-existent values we fill them with 0s
     X = X.fillna(0)
+    print(X_tmp, '\n', type(X_tmp))
+    print('\n', X, '\n', type(X))
 
     """still unsure, if standardscaler should be performed generally or not"""
     # Standardize features by removing the mean and scaling to unit variance
@@ -158,43 +159,3 @@ def get_components(data):
         else:
             pass
 
-
-def plotting_happiness_and_alcohol(dataset, labels, x_var="", y_var=""):
-    """
-    Ploting of the "Happiness and Alcohol Consumption" dataset, based on
-    https://www.geeksforgeeks.org/implementing-dbscan-algorithm-using-sklearn/
-    """
-
-    # Building the label to colour mapping
-    colours = {}
-
-    unique_labels = set(labels)
-    colors = [plt.cm.Spectral(each) for each in np.linspace(0, 1, len(unique_labels))]
-
-    colours[-1] = "k"
-
-    # Building the colour vector for each data point
-    cvec = [colors[label] for label in labels]
-
-    # For the construction of the legend of the plot
-    if not x_var and y_var:
-        x_var = labels[0]
-        y_var = labels[1]
-
-    r = plt.scatter(dataset[x_var], dataset[y_var], color="r")
-    g = plt.scatter(dataset[x_var], dataset[y_var], color="g")
-    b = plt.scatter(dataset[x_var], dataset[y_var], color="b")
-    k = plt.scatter(dataset[x_var], dataset[y_var], color="k")
-
-    # according to the colour vector defined
-    fig = plt.figure(figsize=(9, 9))
-    plt.clf()
-    ax = plt.gca()
-    ax.set_facecolor('#eff2f7')
-    plt.grid(color='#fff')
-
-    plt.scatter(dataset[x_var], dataset[y_var], c=cvec)
-    plt.show()
-
-    st.pyplot(fig)
-    return
