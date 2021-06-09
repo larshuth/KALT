@@ -79,6 +79,18 @@ def k_Means(dataset_x, k_means_params):
     return kmeans, labels, n_clusters
 
 
+def optimal_cluster_count(dataset_x):
+    sil = []
+    kmax = 8
+    # dissimilarity would not be defined for a single cluster, thus, minimum number of clusters should be 2
+    for k in range(3, kmax+1):
+        kmeans = KMeans(n_clusters = k).fit(dataset_x)
+        labels = kmeans.labels_
+        sil.append(silhouette_score(dataset_x, labels, metric = 'euclidean'))
+    
+    return np.argmax(sil)+3
+
+
 def ahc_algo(data, ahc_algo_params):
     """
     Fits the model while using allgomorative hierarchical clustering.
