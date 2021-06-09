@@ -71,3 +71,24 @@ def plotting_dbscan(dbscan, labels, n_clusters, data, x_var="", y_var=""):
     st.pyplot(fig)
     return
 
+
+def plotting_kmeans(kmeans, labels, n_clusters, data):
+    fig = plt.figure(figsize=(9, 9))
+    plt.clf()
+
+    # farben ändern...
+    colors = cycle('bcmrgykbgrcmykbgrcmykbgrcmyk')
+    for k, col in zip(range(-1, n_clusters), colors):
+        my_members = labels == k
+        plt.plot(data[my_members, 0], data[my_members, 1], col + '.', markeredgecolor='#fff', markeredgewidth=0.7,
+                 markersize=8)
+    
+    plt.title(f'k-Means with {n_clusters}')
+    # according to the colour vector defined
+    ax = plt.gca()
+    ax.spines['right'].set_visible(False)
+    ax.spines['top'].set_visible(False)
+    ax.set_facecolor('#eff2f7')
+    plt.grid(color='#fff')
+    plt.show()
+    st.pyplot(fig)
