@@ -186,7 +186,8 @@ def main(algorithm="dbscan", dataset="happiness and alcohol", pca_bool=True):
     elif algorithm_choice == "k-means":
         # k-Means
         n_clusters = st.slider(
-            'Clusters', min_value=1, max_value=8, step=1
+            'Clusters', min_value=1, max_value=8, step=1,
+            value = optimal_cluster_count(datasets[dataset_choice](pca_bool=pca_bool)[0]))
         )
         algo_parameters = {
             'clusters': n_clusters
