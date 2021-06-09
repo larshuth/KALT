@@ -12,13 +12,12 @@ from sklearn.metrics import silhouette_score
 
 
 def density_based_spatial_clustering_of_applications_with_noise(
-    dataset_x, dbscan_params, dataset_y=None
+        dataset_x, dbscan_params, dataset_y=None
 ):
     """
     Performs density-based clustering of applications with noise on datasets transformed as we as a group we agreed
     upon. This code is based upon
     https://www.geeksforgeeks.org/implementing-dbscan-algorithm-using-sklearn/
-
     @param dataset_x: features of the dataset as an array (required)
     @param dataset_y: labels of the dataset as an array (not required, default = none)
     @param dbscan_params: epsilon neighborhood and cluster neighborhood as required for dbscan
@@ -43,15 +42,14 @@ def density_based_spatial_clustering_of_applications_with_noise(
 def mean_shift(data, meanshift_params):
     """
     Performs Mean Shift clustering on given dataset.
-    Based on: 
+    Based on:
     https://scikit-learn.org/stable/modules/generated/sklearn.cluster.MeanShift.html
-
     @param data: processed dataset (e.g. liver disorders dataset)
     @param bandwidth: distance of kernel function or size of "window", either automatically estimated or given by user
     @return mean shift instance, index of cluster each data point belongs to, number of clusters
     """
 
-    #bandwidth = estimate_bandwidth(data)
+    # bandwidth = estimate_bandwidth(data)
     mean_shift = MeanShift(bandwidth=meanshift_params['bandwidth'])
 
     mean_shift.fit(data)
@@ -66,9 +64,9 @@ def mean_shift(data, meanshift_params):
 def k_Means(dataset_x, k_means_params):
     """
     Performs k-Means clustering on given dataset.
-    Based on: 
+    Based on:
     https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html
-        
+
     @param dataset_x: features of the dataset as an array (required)
     @param k_means_params: parameters for the algorithm
     @return kmeans instance, index of cluster each data point belongs to, number of clusters
@@ -84,19 +82,18 @@ def optimal_cluster_count(dataset_x):
     sil = []
     kmax = 8
     # dissimilarity would not be defined for a single cluster, thus, minimum number of clusters should be 2
-    for k in range(3, kmax+1):
-        kmeans = KMeans(n_clusters = k).fit(dataset_x)
+    for k in range(3, kmax + 1):
+        kmeans = KMeans(n_clusters=k).fit(dataset_x)
         labels = kmeans.labels_
-        sil.append(silhouette_score(dataset_x, labels, metric = 'euclidean'))
-    
-    return int(np.argmax(sil)+3)
+        sil.append(silhouette_score(dataset_x, labels, metric='euclidean'))
+
+    return int(np.argmax(sil) + 3)
 
 
 def ahc_algo(data, ahc_algo_params):
     """
     Fits the model while using allgomorative hierarchical clustering.
     Plots the result eaither by showing a dendogram, a scatter or both.
-
     @param data: the data to be used for ahc algorithm
     @param show_dendrogram: if you want to show the result through using a dandogram
     @param show_scatter: if you want to show the results though scattering the datapoints
@@ -120,28 +117,94 @@ def estimate_clusters_ahc(data, link, clusters):
 
     plot_clustering.show_estimated_clusters_ahc(model, clusters)
 
-    
-def single_algo():
-    pass
+
+def single_algo(db_scan_string, algorithms, plotting_algorithms, datasets, dataset_choice):
+    algorithm_choice = st.selectbox("Which algorithm?", tuple(alg for alg in algorithms))
+
+    pca_string = st.selectbox("Use PCA for cluster calculation?", ("Yes", "No"))
+    if pca_string == "Yes":
+        pca_bool = True
+    else:
+        pca_bool = False
+
+    if algorithm_choice == db_scan_string:
+        epsilon = st.slider(
+            "Epsilon Neighborhood", min_value=0.05, max_value=1.0, value=0.3, step=0.05
+        )
+        clustering_neighborhood = st.slider(
+            "Min Neighborhood Size", min_value=1.0, max_value=15.0, value=5.0, step=1.0
+        )
+        algo_parameters = {
+            'epsilon_neighborhood': epsilon,
+            'clustering_neighborhood': clustering_neighborhood
+        }
+    elif algorithm_choice == "mean shift":
+        # for mean shift
+        bandwidth = st.slider(
+            'Bandwidth', min_value=1.0, max_value=4.0,
+            value=float(round(estimate_bandwidth(datasets[dataset_choice](pca_bool=pca_bool)[0]), 2))
+        )
+        algo_parameters = {
+            'bandwidth': bandwidth,
+        }
+    elif algorithm_choice == "k-means":
+        # k-Means
+        n_clusters = st.slider(
+            'Clusters', min_value=1, max_value=8, step=1,
+            value=optimal_cluster_count(datasets[dataset_choice](pca_bool=pca_bool)[0])
+        )
+        algo_parameters = {
+            'clusters': n_clusters
+        }
+    elif algorithm_choice == "ahc_algo":
+        # for hierarchical clustering
+        print("I selected ahc_algo.")
+
+        linkage = st.selectbox("Choose the linkage", ("ward", "average", "complete/maximum", "single"))
+
+        df = pd.DataFrame({"ward": ["minimizes the variance of the clusters being merged"],
+                           "average": ["minimizes the variance of the clusters being merged"],
+                           "complete/maximum": [
+                               "linkage uses the maximum distances between all observations of the two sets"],
+                           "single": ["uses the minimum of the distances between all observations of the two sets"]})
+        df.index = [""] * len(df)
+        st.write(df[linkage])
+
+        if linkage == "complete/maximum":
+            linkage = "complete"
+
+        show_cluster = st.slider("Show n clusters", min_value=2, max_value=8,
+                                 value=4, step=1)
+        x, y = datasets[dataset_choice](pca_bool=pca_bool)
+        estimate_clusters_ahc(x, linkage, show_cluster)
+
+        algo_parameters = {
+            'link': linkage,
+            'n_clusters': show_cluster
+        }
+
+    x, y = datasets[dataset_choice](pca_bool=pca_bool)
+
+    fitted_data, labels, n_clusters = algorithms[algorithm_choice](
+        x, algo_parameters
+    )
+
+    plotting_algorithms[algorithm_choice](fitted_data, labels, n_clusters, x)
 
 
-def all_algo():
+def all_algo(db_scan_string, algorithms, plotting_algorithms, datasets, dataset_choice):
     pass
 
 
 def main(algorithm="dbscan", dataset="happiness and alcohol", pca_bool=True):
     print("pick a god and pray")
-    
+
     page = st.sidebar.radio("Choose Comparison", ('All Algorithms', 'Single Algorithm'))
     if page == 'All Algorithms':
         st.write('Comparison for all four algorithms is selected.')
     else:
         st.write("Comparison for a single algorithm is selected.")
 
-    if page == "All Algorithms":
-        all_algo()
-    else:
-        single_algo()
 
     db_scan_string = 'DBSCAN'
 
@@ -168,84 +231,18 @@ def main(algorithm="dbscan", dataset="happiness and alcohol", pca_bool=True):
     st.write(
         """
     # Sata Dience.
-    
+
     Colleration?
     Culstering?
     """
     )
 
     dataset_choice = st.selectbox("Which dataset?", tuple(ds for ds in datasets))
-    algorithm_choice = st.selectbox("Which algorithm?", tuple(alg for alg in algorithms))
 
-    pca_string = st.selectbox("Use PCA for cluster calculation?", ("Yes", "No"))
-    if pca_string == "Yes":
-        pca_bool = True
+    if page == "All Algorithms":
+        all_algo(db_scan_string, algorithms, plotting_algorithms, datasets, dataset_choice)
     else:
-        pca_bool = False
-    
-    if algorithm_choice == db_scan_string:
-        epsilon = st.slider(
-            "Epsilon Neighborhood", min_value=0.05, max_value=1.0, value=0.3, step=0.05
-        )
-        clustering_neighborhood = st.slider(
-            "Min Neighborhood Size", min_value=1.0, max_value=15.0, value=5.0, step=1.0
-        )
-        algo_parameters = {
-            'epsilon_neighborhood': epsilon,
-            'clustering_neighborhood': clustering_neighborhood
-        }
-    elif algorithm_choice == "mean shift":
-        # for mean shift
-        bandwidth = st.slider(
-            'Bandwidth', min_value=1.0, max_value=4.0,
-            value=float(round(estimate_bandwidth(datasets[dataset_choice](pca_bool=pca_bool)[0]), 2))
-        )
-        algo_parameters = {
-            'bandwidth': bandwidth,
-        }
-    elif algorithm_choice == "k-means":
-        # k-Means
-        n_clusters = st.slider(
-            'Clusters', min_value=1, max_value=8, step=1,
-            value = optimal_cluster_count(datasets[dataset_choice](pca_bool=pca_bool)[0])
-        )
-        algo_parameters = {
-            'clusters': n_clusters
-        }
-    elif algorithm_choice == "ahc_algo":
-        # for hierarchical clustering
-        print("I selected ahc_algo.")
-
-        linkage = st.selectbox("Choose the linkage", ("ward", "average", "complete/maximum", "single"))
-
-        df = pd.DataFrame({"ward": ["minimizes the variance of the clusters being merged"],
-                           "average": ["minimizes the variance of the clusters being merged"],
-                           "complete/maximum": [
-                               "linkage uses the maximum distances between all observations of the two sets"],
-                           "single": ["uses the minimum of the distances between all observations of the two sets"]})
-        df.index = [""] * len(df)
-        st.write(df[linkage])
-
-        if linkage == "complete/maximum":
-            linkage = "complete"
-
-        show_cluster = st.slider("Show n clusters", min_value=2, max_value=8,
-                                    value=4, step=1)
-        x, y = datasets[dataset_choice](pca_bool=pca_bool)
-        estimate_clusters_ahc(x, linkage, show_cluster)
-
-        algo_parameters = {
-            'link': linkage,
-            'n_clusters': show_cluster
-        }
-
-    x, y = datasets[dataset_choice](pca_bool=pca_bool)
-
-    fitted_data, labels, n_clusters = algorithms[algorithm_choice](
-        x, algo_parameters
-    )
-
-    plotting_algorithms[algorithm_choice](fitted_data, labels, n_clusters, x)
+        single_algo(db_scan_string, algorithms, plotting_algorithms, datasets, dataset_choice)
 
     return 0
 
