@@ -2,8 +2,12 @@ import numpy as np
 import streamlit as st
 import dataset_tranformations
 import plot_clustering
+import pandas as pd
+
+from sklearn.cluster import AgglomerativeClustering
 
 from sklearn.cluster import DBSCAN, MeanShift, KMeans, estimate_bandwidth
+
 
 
 def density_based_spatial_clustering_of_applications_with_noise(
@@ -68,11 +72,40 @@ def k_Means(dataset_x, k_means_params):
     @param k_means_params: parameters for the algorithm
     @return kmeans instance, index of cluster each data point belongs to, number of clusters
     """
-    n_clusters=k_means_params['clusters']
+    n_clusters = k_means_params['clusters']
     kmeans = KMeans(n_clusters=k_means_params['clusters'])
     kmeans.fit(dataset_x)
     labels = kmeans.labels_
     return kmeans, labels, n_clusters
+
+
+def ahc_algo(data, ahc_algo_params):
+    """
+    Fits the model while using allgomorative hierarchical clustering.
+    Plots the result eaither by showing a dendogram, a scatter or both.
+
+    @param data: the data to be used for ahc algorithm
+    @param show_dendrogram: if you want to show the result through using a dandogram
+    @param show_scatter: if you want to show the results though scattering the datapoints
+    @param n_clusters: if you want plot the scattered data use n_clusters to show n clusters
+    """
+    n_clusters = ahc_algo_params['n_clusters']
+    link = ahc_algo_params['link']
+
+    # for scatter
+    cluster = AgglomerativeClustering(n_clusters, affinity='euclidean', linkage=link)
+    cluster.fit_predict(data)
+
+    labels = cluster.labels_
+
+    return cluster, labels, n_clusters
+
+
+def estimate_clusters_ahc(data, link, clusters):
+    model = AgglomerativeClustering(distance_threshold=0, n_clusters=None, linkage=link)
+    model = model.fit(data)
+
+    plot_clustering.show_estimated_clusters_ahc(model, clusters)
 
 
 def main(algorithm="dbscan", dataset="happiness and alcohol", pca_bool=True):
@@ -83,18 +116,20 @@ def main(algorithm="dbscan", dataset="happiness and alcohol", pca_bool=True):
     algorithms = {
         db_scan_string: density_based_spatial_clustering_of_applications_with_noise,
         "mean shift": mean_shift,
-        "k-means": k_Means
+        "k-means": k_Means,
+        "ahc_algo": ahc_algo
     }
     plotting_algorithms = {
         db_scan_string: plot_clustering.plotting_dbscan,
         "mean shift": plot_clustering.plotting_mean_shift,
-        "k-means" : plot_clustering.plotting_kmeans
+        "k-means": plot_clustering.plotting_kmeans,
+        "ahc_algo": plot_clustering.plotting_ahc
     }
 
     datasets = {
         "happiness and alcohol": dataset_tranformations.happiness_alcohol_consumption,
         "seeds": dataset_tranformations.fixseeds,
-        "HCV Impfungen, Erkrankungen und mehr": dataset_tranformations.hcvdataset,
+        "HCV dataset": dataset_tranformations.hcvdataset,
         "liver disorder": dataset_tranformations.liver_disorders
     }
 
@@ -143,6 +178,32 @@ def main(algorithm="dbscan", dataset="happiness and alcohol", pca_bool=True):
         )
         algo_parameters = {
             'clusters': n_clusters
+        }
+    elif algorithm_choice == "ahc_algo":
+        # for hierarchical clustering
+        print("I selected ahc_algo.")
+
+        linkage = st.selectbox("Choose the linkage", ("ward", "average", "complete/maximum", "single"))
+
+        df = pd.DataFrame({"ward": ["minimizes the variance of the clusters being merged"],
+                           "average": ["minimizes the variance of the clusters being merged"],
+                           "complete/maximum": [
+                               "linkage uses the maximum distances between all observations of the two sets"],
+                           "single": ["uses the minimum of the distances between all observations of the two sets"]})
+        df.index = [""] * len(df)
+        st.write(df[linkage])
+
+        if linkage == "complete/maximum":
+            linkage = "complete"
+
+        show_cluster = st.slider("Show n clusters", min_value=2, max_value=8,
+                                    value=4, step=1)
+        x, y = datasets[dataset_choice](pca_bool=pca_bool)
+        estimate_clusters_ahc(x, linkage, show_cluster)
+
+        algo_parameters = {
+            'link': linkage,
+            'n_clusters': show_cluster
         }
 
     x, y = datasets[dataset_choice](pca_bool=pca_bool)
