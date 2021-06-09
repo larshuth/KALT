@@ -6,8 +6,9 @@ import pandas as pd
 
 from sklearn.cluster import AgglomerativeClustering
 
-from sklearn.cluster import DBSCAN, MeanShift, KMeans, estimate_bandwidth, silhouette_score
+from sklearn.cluster import DBSCAN, MeanShift, KMeans, estimate_bandwidth
 
+from sklearn.metrics import silhouette_score
 
 
 def density_based_spatial_clustering_of_applications_with_noise(
