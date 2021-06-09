@@ -6,7 +6,7 @@ import pandas as pd
 
 from sklearn.cluster import AgglomerativeClustering
 
-from sklearn.cluster import DBSCAN, MeanShift, KMeans, estimate_bandwidth
+from sklearn.cluster import DBSCAN, MeanShift, KMeans, estimate_bandwidth, silhouette_score
 
 
 
@@ -187,7 +187,7 @@ def main(algorithm="dbscan", dataset="happiness and alcohol", pca_bool=True):
         # k-Means
         n_clusters = st.slider(
             'Clusters', min_value=1, max_value=8, step=1,
-            value = optimal_cluster_count(datasets[dataset_choice](pca_bool=pca_bool)[0]))
+            value = optimal_cluster_count(datasets[dataset_choice](pca_bool=pca_bool)[0])
         )
         algo_parameters = {
             'clusters': n_clusters
