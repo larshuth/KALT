@@ -120,9 +120,28 @@ def estimate_clusters_ahc(data, link, clusters):
 
     plot_clustering.show_estimated_clusters_ahc(model, clusters)
 
+    
+def single_algo():
+    pass
+
+
+def all_algo():
+    pass
+
 
 def main(algorithm="dbscan", dataset="happiness and alcohol", pca_bool=True):
     print("pick a god and pray")
+    
+    page = st.sidebar.radio("Choose Comparison", ('All Algorithms', 'Single Algorithm'))
+    if page == 'All Algorithms':
+        st.write('Comparison for all four algorithms is selected.')
+    else:
+        st.write("Comparison for a single algorithm is selected.")
+
+    if page == "All Algorithms":
+        all_algo()
+    else:
+        single_algo()
 
     db_scan_string = 'DBSCAN'
 
