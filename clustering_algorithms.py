@@ -127,9 +127,18 @@ def single_algo(db_scan_string, algorithms, plotting_algorithms, datasets, datas
     else:
         pca_bool = False
 
+
+    dataset_epsilons = {
+        "happiness and alcohol": 0.8,
+        "seeds": 0.8,
+        "HCV dataset": 5.0,
+        "liver disorder": 2.3
+    }
+
     if algorithm_choice == db_scan_string:
+        max_epsilon = dataset_epsilons[dataset_choice]
         epsilon = st.slider(
-            "Epsilon Neighborhood", min_value=0.05, max_value=1.0, value=0.3, step=0.05
+            "Epsilon Neighborhood", min_value=0.05, max_value=max_epsilon, value=round(max_epsilon/2, 1), step=0.05
         )
         clustering_neighborhood = st.slider(
             "Min Neighborhood Size", min_value=1.0, max_value=15.0, value=5.0, step=1.0
