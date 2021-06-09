@@ -89,7 +89,7 @@ def optimal_cluster_count(dataset_x):
         labels = kmeans.labels_
         sil.append(silhouette_score(dataset_x, labels, metric = 'euclidean'))
     
-    return np.argmax(sil)+3
+    return int(np.argmax(sil)+3)
 
 
 def ahc_algo(data, ahc_algo_params):
