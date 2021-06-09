@@ -3,6 +3,8 @@ import streamlit as st
 from itertools import cycle
 import numpy as np
 
+from scipy.cluster.hierarchy import dendrogram
+
 
 def plotting_mean_shift(mean_shift, labels, n_clusters, data):
     """
@@ -91,4 +93,59 @@ def plotting_kmeans(kmeans, labels, n_clusters, data):
     ax.set_facecolor('#eff2f7')
     plt.grid(color='#fff')
     plt.show()
+    st.pyplot(fig)
+
+
+def plotting_ahc(ahc_algo, labels, n_clusters, data):
+    fig = plt.figure(figsize=(9, 9))
+    plt.clf()
+
+    # farben ändern...
+    colors = cycle('bcmrgykbgrcmykbgrcmykbgrcmyk')
+    for k, col in zip(range(-1, n_clusters), colors):
+        my_members = labels == k
+        plt.plot(data[my_members, 0], data[my_members, 1], col + '.', markeredgecolor='#fff', markeredgewidth=0.7,
+                 markersize=8)
+
+    plt.title(f'ahc - currently showing clusters: {n_clusters}')
+    # according to the colour vector defined
+    ax = plt.gca()
+    ax.spines['right'].set_visible(False)
+    ax.spines['top'].set_visible(False)
+    ax.set_facecolor('#eff2f7')
+    plt.grid(color='#fff')
+    plt.show()
+    st.pyplot(fig)
+
+
+def plot_dendrogram(model, **kwargs):
+    """
+    creates linkage matrix and then plots the dendrogram
+    https://scikit-learn.org/stable/auto_examples/cluster/plot_agglomerative_dendrogram.html
+    """
+    # create the counts of samples under each node
+    counts = np.zeros(model.children_.shape[0])
+    n_samples = len(model.labels_)
+    for i, merge in enumerate(model.children_):
+        current_count = 0
+        for child_idx in merge:
+            if child_idx < n_samples:
+                current_count += 1  # leaf node
+            else:
+                current_count += counts[child_idx - n_samples]
+        counts[i] = current_count
+
+    linkage_matrix = np.column_stack([model.children_, model.distances_,
+                                      counts]).astype(float)
+
+    dendrogram(linkage_matrix, **kwargs)
+
+
+def show_estimated_clusters_ahc(model, clusters):
+    # dendrogram
+    fig = plt.figure(figsize=(15, 5))
+    plt.title('Hierarchical Clustering Dendrogram')
+    plot_dendrogram(model, truncate_mode='lastp', p=clusters)
+    plt.xlabel("Number of points in node.")
+    plt.ylabel("Distances between new clusters.")
     st.pyplot(fig)
