@@ -58,6 +58,23 @@ def mean_shift(data, meanshift_params):
     return mean_shift, labels, n_clusters
 
 
+def k_Means(dataset_x, k_means_params):
+    """
+    Performs k-Means clustering on given dataset.
+    Based on: 
+    https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html
+        
+    @param dataset_x: features of the dataset as an array (required)
+    @param k_means_params: parameters for the algorithm
+    @return kmeans instance, index of cluster each data point belongs to, number of clusters
+    """
+    n_clusters=k_means_params['clusters']
+    kmeans = KMeans(n_clusters=k_means_params['clusters'])
+    kmeans.fit(dataset_x)
+    labels = kmeans.labels_
+    return kmeans, labels, n_clusters
+
+
 def main(algorithm="dbscan", dataset="happiness and alcohol", pca_bool=True):
     print("pick a god and pray")
 
@@ -65,11 +82,13 @@ def main(algorithm="dbscan", dataset="happiness and alcohol", pca_bool=True):
 
     algorithms = {
         db_scan_string: density_based_spatial_clustering_of_applications_with_noise,
-        "mean shift": mean_shift
+        "mean shift": mean_shift,
+        "k-means": k_Means
     }
     plotting_algorithms = {
         db_scan_string: plot_clustering.plotting_dbscan,
-        "mean shift": plot_clustering.plotting_mean_shift
+        "mean shift": plot_clustering.plotting_mean_shift,
+        "k-means" : plot_clustering.plotting_kmeans
     }
 
     datasets = {
@@ -116,6 +135,14 @@ def main(algorithm="dbscan", dataset="happiness and alcohol", pca_bool=True):
         )
         algo_parameters = {
             'bandwidth': bandwidth,
+        }
+    elif algorithm_choice == "k-means":
+        # k-Means
+        n_clusters = st.slider(
+            'Clusters', min_value=1, max_value=8, step=1
+        )
+        algo_parameters = {
+            'clusters': n_clusters
         }
 
     x, y = datasets[dataset_choice](pca_bool=pca_bool)
