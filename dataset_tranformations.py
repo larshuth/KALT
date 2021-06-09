@@ -103,8 +103,9 @@ def liver_disorders(file_path="./datasets/liver_disorders.data", pca_bool=True):
     Based on:
     https://365datascience.com/tutorials/python-tutorials/pca-k-means/
 
+    @param file_path: path of liver disorders dataset
     @param pca_bool: boolean value to decide whether sklearn's PCA should be applied or not
-    @return: processed liver disorders dataset according to pca_bool
+    @return: processed liver disorders dataset according to pca_bool, None as no labels exist
     """
 
     liver_disorders = pd.read_csv(file_path, sep=',', names=[

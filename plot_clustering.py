@@ -22,9 +22,7 @@ def plotting_mean_shift(mean_shift, labels, n_clusters, data):
     """
 
     fig = plt.figure(1)
-    plt.clf()
 
-    #farben ändern...
     colors = cycle('bcmrgykbgrcmykbgrcmykbgrcmyk')
     for k, col in zip(range(n_clusters), colors):
         my_members = labels == k
@@ -33,15 +31,14 @@ def plotting_mean_shift(mean_shift, labels, n_clusters, data):
         plt.plot(cluster_center[0], cluster_center[1], 'o', markerfacecolor=col,
              markeredgecolor='#fff', markersize=10)
     
-    plt.title('Mean Shift - Estimated number of clusters: %d' % n_clusters)
+    plt.title('Mean Shift - #clusters: %d' % n_clusters)
     ax = plt.gca()
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
     ax.set_facecolor('#eff2f7')
 
     plt.grid(color='#fff')
-    plt.show()
-    st.pyplot(fig)
+  
 
 
 def plotting_dbscan(dbscan, labels, n_clusters, data, x_var="", y_var=""):
@@ -50,17 +47,15 @@ def plotting_dbscan(dbscan, labels, n_clusters, data, x_var="", y_var=""):
     https://www.geeksforgeeks.org/implementing-dbscan-algorithm-using-sklearn/
     """
 
-    fig = plt.figure(figsize=(9, 9))
-    plt.clf()
+    fig = plt.figure(1)
 
-    # farben ändern...
     colors = cycle('bcmrgykbgrcmykbgrcmykbgrcmyk')
     for k, col in zip(range(-1, n_clusters), colors):
         my_members = labels == k
         plt.plot(data[my_members, 0], data[my_members, 1], col + '.', markeredgecolor='#fff', markeredgewidth=0.7,
                  markersize=8)
 
-    plt.title(f'DBSCAN - Estimated number of clusters: {n_clusters}')
+    plt.title(f'DBSCAN - #clusters: {n_clusters}')
     # according to the colour vector defined
     ax = plt.gca()
     ax.spines['right'].set_visible(False)
@@ -68,54 +63,42 @@ def plotting_dbscan(dbscan, labels, n_clusters, data, x_var="", y_var=""):
     ax.set_facecolor('#eff2f7')
     plt.grid(color='#fff')
 
-    plt.show()
-
-    st.pyplot(fig)
-    return
 
 
 def plotting_kmeans(kmeans, labels, n_clusters, data):
-    fig = plt.figure(figsize=(9, 9))
-    plt.clf()
+    fig = plt.figure(1)
 
-    # farben ändern...
     colors = cycle('bcmrgykbgrcmykbgrcmykbgrcmyk')
     for k, col in zip(range(-1, n_clusters), colors):
         my_members = labels == k
         plt.plot(data[my_members, 0], data[my_members, 1], col + '.', markeredgecolor='#fff', markeredgewidth=0.7,
                  markersize=8)
     
-    plt.title(f'k-Means with {n_clusters}')
+    plt.title(f'k-Means - #clusters: {n_clusters}')
     # according to the colour vector defined
     ax = plt.gca()
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
     ax.set_facecolor('#eff2f7')
     plt.grid(color='#fff')
-    plt.show()
-    st.pyplot(fig)
 
 
 def plotting_ahc(ahc_algo, labels, n_clusters, data):
-    fig = plt.figure(figsize=(9, 9))
-    plt.clf()
+    fig = plt.figure(1)
 
-    # farben ändern...
     colors = cycle('bcmrgykbgrcmykbgrcmykbgrcmyk')
     for k, col in zip(range(-1, n_clusters), colors):
         my_members = labels == k
         plt.plot(data[my_members, 0], data[my_members, 1], col + '.', markeredgecolor='#fff', markeredgewidth=0.7,
                  markersize=8)
 
-    plt.title(f'ahc - currently showing clusters: {n_clusters}')
+    plt.title(f'AHC - #clusters: {n_clusters}')
     # according to the colour vector defined
     ax = plt.gca()
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
     ax.set_facecolor('#eff2f7')
     plt.grid(color='#fff')
-    plt.show()
-    st.pyplot(fig)
 
 
 def plot_dendrogram(model, **kwargs):
