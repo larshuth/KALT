@@ -3,11 +3,9 @@ import streamlit as st
 import dataset_tranformations
 import plot_clustering
 import pandas as pd
+import matplotlib.pyplot as plt
 
-from sklearn.cluster import AgglomerativeClustering
-
-from sklearn.cluster import DBSCAN, MeanShift, KMeans, estimate_bandwidth
-
+from sklearn.cluster import DBSCAN, MeanShift, KMeans, AgglomerativeClustering, estimate_bandwidth
 from sklearn.metrics import silhouette_score
 
 
@@ -45,11 +43,10 @@ def mean_shift(data, meanshift_params):
     Based on:
     https://scikit-learn.org/stable/modules/generated/sklearn.cluster.MeanShift.html
     @param data: processed dataset (e.g. liver disorders dataset)
-    @param bandwidth: distance of kernel function or size of "window", either automatically estimated or given by user
+    @param meanshift_params['bandwidth']: distance of kernel function or size of "window", either automatically estimated or given by user
     @return mean shift instance, index of cluster each data point belongs to, number of clusters
     """
 
-    # bandwidth = estimate_bandwidth(data)
     mean_shift = MeanShift(bandwidth=meanshift_params['bandwidth'])
 
     mean_shift.fit(data)
@@ -119,6 +116,9 @@ def estimate_clusters_ahc(data, link, clusters):
 
 
 def single_algo(db_scan_string, algorithms, plotting_algorithms, datasets, dataset_choice):
+
+    st.write("### Compare the parameters of a single algorithm.")
+    
     algorithm_choice = st.selectbox("Which algorithm?", tuple(alg for alg in algorithms))
 
     pca_string = st.selectbox("Use PCA for cluster calculation?", ("Yes", "No"))
@@ -127,12 +127,11 @@ def single_algo(db_scan_string, algorithms, plotting_algorithms, datasets, datas
     else:
         pca_bool = False
 
-
     dataset_epsilons = {
-        "happiness and alcohol": 0.8,
-        "seeds": 0.8,
+        "Happiness and alcohol": 0.8,
+        "Seeds": 0.8,
         "HCV dataset": 5.0,
-        "liver disorder": 2.3
+        "Liver disorders": 2.3
     }
 
     if algorithm_choice == db_scan_string:
@@ -147,7 +146,7 @@ def single_algo(db_scan_string, algorithms, plotting_algorithms, datasets, datas
             'epsilon_neighborhood': epsilon,
             'clustering_neighborhood': clustering_neighborhood
         }
-    elif algorithm_choice == "mean shift":
+    elif algorithm_choice == "Mean Shift":
         # for mean shift
         bandwidth = st.slider(
             'Bandwidth', min_value=1.0, max_value=4.0,
@@ -156,7 +155,7 @@ def single_algo(db_scan_string, algorithms, plotting_algorithms, datasets, datas
         algo_parameters = {
             'bandwidth': bandwidth,
         }
-    elif algorithm_choice == "k-means":
+    elif algorithm_choice == "k-Means":
         # k-Means
         n_clusters = st.slider(
             'Clusters', min_value=1, max_value=8, step=1,
@@ -165,7 +164,7 @@ def single_algo(db_scan_string, algorithms, plotting_algorithms, datasets, datas
         algo_parameters = {
             'clusters': n_clusters
         }
-    elif algorithm_choice == "ahc_algo":
+    elif algorithm_choice == "Agglomerative Hierarchical Clustering":
         # for hierarchical clustering
         print("I selected ahc_algo.")
 
@@ -198,43 +197,88 @@ def single_algo(db_scan_string, algorithms, plotting_algorithms, datasets, datas
         x, algo_parameters
     )
 
+    fig = plt.figure()
     plotting_algorithms[algorithm_choice](fitted_data, labels, n_clusters, x)
+    st.pyplot(fig)
 
 
 def all_algo(db_scan_string, algorithms, plotting_algorithms, datasets, dataset_choice):
-    pass
+
+    st.write("### Compare all four algorithms.")
+    x, y = datasets[dataset_choice](pca_bool=True)
+    fig = plt.figure()
+
+    for algo, i in zip(algorithms, range(1, len(algorithms)+1)):
+        if algo == "Mean Shift":
+            algo_parameters = {
+                "bandwidth": estimate_bandwidth(datasets[dataset_choice](pca_bool=True)[0])
+            }
+        elif algo == "Agglomerative Hierarchical Clustering":
+            algo_parameters = {
+                "link": "ward",
+                "n_clusters": 4
+            }
+        elif algo == "DBSCAN":
+            algo_parameters = {
+                "epsilon_neighborhood": 0.3,
+                "clustering_neighborhood": 5
+            }
+        elif algo == "k-Means":
+            algo_parameters = { 
+                "clusters": optimal_cluster_count(datasets[dataset_choice](pca_bool=True)[0])
+            }
+        fitted_data, labels, n_clusters = algorithms[algo](x, algo_parameters)
+        plt.subplot(2, 2, i)
+        plotting_algorithms[algo](fitted_data, labels, n_clusters, x)
+
+    plt.tight_layout()
+    st.pyplot(fig)
+   
 
 
-def main(algorithm="dbscan", dataset="happiness and alcohol", pca_bool=True):
+def main(algorithm="dbscan", dataset="Happiness and alcohol", pca_bool=True):
     print("pick a god and pray")
 
-    page = st.sidebar.radio("Choose Comparison", ('All Algorithms', 'Single Algorithm'))
-    if page == 'All Algorithms':
-        st.write('Comparison for all four algorithms is selected.')
-    else:
-        st.write("Comparison for a single algorithm is selected.")
+    sid = st.sidebar
+    page = sid.radio("Choose Comparison", ('All Algorithms', 'Single Algorithm'))
 
+    sid.markdown("---")
+
+    sid.header("About")
+    t1 = "Here will be described what this page is to be used for."
+    sid.markdown(t1, unsafe_allow_html=True)
+
+    sid.markdown("---")
+
+    sid.header("Creators")
+    sid.markdown('''This is a KALT project. The project members are:
+        \n Katharina Dahmann
+        \n Alicia Wirth
+        \n Lars Hut
+        \n Tolga Tel''')
+
+    sid.markdown("---")
 
     db_scan_string = 'DBSCAN'
 
     algorithms = {
         db_scan_string: density_based_spatial_clustering_of_applications_with_noise,
-        "mean shift": mean_shift,
-        "k-means": k_Means,
-        "ahc_algo": ahc_algo
+        "Mean Shift": mean_shift,
+        "k-Means": k_Means,
+        "Agglomerative Hierarchical Clustering": ahc_algo
     }
     plotting_algorithms = {
         db_scan_string: plot_clustering.plotting_dbscan,
-        "mean shift": plot_clustering.plotting_mean_shift,
-        "k-means": plot_clustering.plotting_kmeans,
-        "ahc_algo": plot_clustering.plotting_ahc
+        "Mean Shift": plot_clustering.plotting_mean_shift,
+        "k-Means": plot_clustering.plotting_kmeans,
+        "Agglomerative Hierarchical Clustering": plot_clustering.plotting_ahc
     }
 
     datasets = {
-        "happiness and alcohol": dataset_tranformations.happiness_alcohol_consumption,
-        "seeds": dataset_tranformations.fixseeds,
+        "Happiness and alcohol": dataset_tranformations.happiness_alcohol_consumption,
+        "Seeds": dataset_tranformations.fixseeds,
         "HCV dataset": dataset_tranformations.hcvdataset,
-        "liver disorder": dataset_tranformations.liver_disorders
+        "Liver disorders": dataset_tranformations.liver_disorders
     }
 
     st.write(
@@ -248,6 +292,7 @@ def main(algorithm="dbscan", dataset="happiness and alcohol", pca_bool=True):
 
     dataset_choice = st.selectbox("Which dataset?", tuple(ds for ds in datasets))
 
+    # page display
     if page == "All Algorithms":
         all_algo(db_scan_string, algorithms, plotting_algorithms, datasets, dataset_choice)
     else:
