@@ -115,7 +115,7 @@ def estimate_clusters_ahc(data, link, clusters):
     plot_clustering.show_estimated_clusters_ahc(model, clusters)
 
 
-def single_algo(db_scan_string, algorithms, plotting_algorithms, datasets, dataset_choice):
+def single_algo(db_scan_string, algorithms, plotting_algorithms, datasets, dataset_choice, dataset_start_epsilons, dataset_max_epsilons):
 
     st.write("### Compare the parameters of a single algorithm.")
     
@@ -127,17 +127,12 @@ def single_algo(db_scan_string, algorithms, plotting_algorithms, datasets, datas
     else:
         pca_bool = False
 
-    dataset_epsilons = {
-        "Happiness and alcohol": 0.8,
-        "Seeds": 0.8,
-        "HCV dataset": 5.0,
-        "Liver disorders": 2.3
-    }
-
     if algorithm_choice == db_scan_string:
-        max_epsilon = dataset_epsilons[dataset_choice]
+        max_epsilon = dataset_max_epsilons[dataset_choice]
+        start_epsilon = dataset_start_epsilons[dataset_choice]
+
         epsilon = st.slider(
-            "Epsilon Neighborhood", min_value=0.05, max_value=max_epsilon, value=round(max_epsilon/2, 1), step=0.05
+            "Epsilon Neighborhood", min_value=0.05, max_value=max_epsilon, value=start_epsilon, step=0.05
         )
         clustering_neighborhood = st.slider(
             "Min Neighborhood Size", min_value=1.0, max_value=15.0, value=5.0, step=1.0
@@ -202,7 +197,7 @@ def single_algo(db_scan_string, algorithms, plotting_algorithms, datasets, datas
     st.pyplot(fig)
 
 
-def all_algo(db_scan_string, algorithms, plotting_algorithms, datasets, dataset_choice):
+def all_algo(db_scan_string, algorithms, plotting_algorithms, datasets, dataset_choice, dataset_start_epsilons):
 
     st.write("### Compare all four algorithms.")
     x, y = datasets[dataset_choice](pca_bool=True)
@@ -220,7 +215,7 @@ def all_algo(db_scan_string, algorithms, plotting_algorithms, datasets, dataset_
             }
         elif algo == "DBSCAN":
             algo_parameters = {
-                "epsilon_neighborhood": 0.3,
+                "epsilon_neighborhood": dataset_start_epsilons[dataset_choice],
                 "clustering_neighborhood": 5
             }
         elif algo == "k-Means":
@@ -254,7 +249,7 @@ def main(algorithm="dbscan", dataset="Happiness and alcohol", pca_bool=True):
     sid.markdown('''This is a KALT project. The project members are:
         \n Katharina Dahmann
         \n Alicia Wirth
-        \n Lars Hut
+        \n Lars Huth
         \n Tolga Tel''')
 
     sid.markdown("---")
@@ -281,6 +276,20 @@ def main(algorithm="dbscan", dataset="Happiness and alcohol", pca_bool=True):
         "Liver disorders": dataset_tranformations.liver_disorders
     }
 
+    dataset_max_epsilons = {
+        "Happiness and alcohol": 0.8,
+        "Seeds": 0.8,
+        "HCV dataset": 5.0,
+        "Liver disorders": 2.3
+    }
+
+    dataset_start_epsilons = {
+        "Happiness and alcohol": 0.4,
+        "Seeds": 0.5,
+        "HCV dataset": 2.5,
+        "Liver disorders": 0.8
+    }
+
     st.write(
         """
     # Sata Dience.
@@ -294,9 +303,9 @@ def main(algorithm="dbscan", dataset="Happiness and alcohol", pca_bool=True):
 
     # page display
     if page == "All Algorithms":
-        all_algo(db_scan_string, algorithms, plotting_algorithms, datasets, dataset_choice)
+        all_algo(db_scan_string, algorithms, plotting_algorithms, datasets, dataset_choice, dataset_start_epsilons)
     else:
-        single_algo(db_scan_string, algorithms, plotting_algorithms, datasets, dataset_choice)
+        single_algo(db_scan_string, algorithms, plotting_algorithms, datasets, dataset_choice, dataset_start_epsilons, dataset_max_epsilons)
 
     return 0
 
