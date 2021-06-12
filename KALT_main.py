@@ -169,7 +169,8 @@ def all_algo(
 
         scores = pd.DataFrame(clustering_algorithms.evaluation(x, labels, external_validation, y))
         results = pd.concat([results, scores], ignore_index=True)
-
+    
+    results = results.rename(index={0:"db_scan_string", 1:"Mean Shift", 2:"k-Means", 3:"Agglomerative Hierarchical Clustering"})
     plt.tight_layout()
     st.pyplot(fig)
 
