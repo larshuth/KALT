@@ -140,7 +140,7 @@ def evaluation(datapoints, labels_pred, labeled=False, labels_real=None):
         rand = rand_score(labels_real, labels_pred)
         # Jaccard
         jaccard = jaccard_score(labels_real, labels_pred, average='macro')
-        return {'purity': purity, 'rand': rand, 'jaccard': jaccard}
+        return {'purity': [purity], 'rand': [rand], 'jaccard': [jaccard]}
     else:
         # Davies Bouldin
         davies_bouldin = davies_bouldin_score(datapoints, labels_pred)
@@ -149,5 +149,5 @@ def evaluation(datapoints, labels_pred, labeled=False, labels_real=None):
         # Dunn
         pairwise_distances = np.array(list(np.array(list(np.linalg.norm(i - j) for i in datapoints)) for j in datapoints))
         dunn_ = dunn(labels_pred, pairwise_distances)
-        return {'davies': davies_bouldin, 'silhouette': silhouette, 'dunn': dunn_}
+        return {'davies': [davies_bouldin], 'silhouette': [silhouette], 'dunn': [dunn_]}
 

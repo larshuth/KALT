@@ -10,7 +10,6 @@ import matplotlib.pyplot as plt
 from sklearn.cluster import (
     estimate_bandwidth,
 )
-from sklearn.metrics import silhouette_score
 
 
 def single_algo(
@@ -168,8 +167,8 @@ def all_algo(
         plt.subplot(2, 2, i)
         plotting_algorithms[algo](fitted_data, labels, n_clusters, x)
 
-        scores = clustering_algorithms.evaluation(x, labels, external_validation, y)
-        results = results.append(pd.DataFrame(scores), index=algo)
+        scores = pd.DataFrame(clustering_algorithms.evaluation(x, labels, external_validation, y))
+        results = pd.concat([results, scores], ignore_index=True)
 
     plt.tight_layout()
     st.pyplot(fig)
