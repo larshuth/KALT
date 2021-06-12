@@ -8,7 +8,9 @@ from sklearn.decomposition import PCA
 from sklearn.preprocessing import normalize
 
 
-def happiness_alcohol_consumption(file_path="./datasets/HappinessAlcoholConsumption.csv", pca_bool=True):
+def happiness_alcohol_consumption(
+    file_path="./datasets/HappinessAlcoholConsumption.csv", pca_bool=True
+):
     """
     Transforms the "Happiness and Alcohol Consumption" dataset,
     https://www.kaggle.com/marcospessotto/happiness-and-alcohol-consumption
@@ -46,7 +48,7 @@ def fixseeds(file_path="./datasets/seeds_dataset.txt", pca_bool=True):
 
     @return: features and labels of the seeds dataset
     """
-    seeds = pd.read_csv(file_path, header=None, sep='\t')
+    seeds = pd.read_csv(file_path, header=None, sep="\t")
     seeds[[7]] = seeds[[7]].add(-1)
     x = seeds[[0, 1, 2, 3, 4, 5, 6]]
     y = seeds.loc[:, 7]
@@ -74,8 +76,10 @@ def hcvdataset(file_path="./datasets/hcvdat0.csv", pca_bool=True):
 
     X = pd.read_csv(file_path, index_col=0)
     # one-hot encoding for row Category and Sex
-    X_tmp = pd.get_dummies(X[['Category', 'Sex']])
-    X = X.drop(columns=['Category', 'Sex']).merge(X_tmp, left_index=True, right_index=True)
+    X_tmp = pd.get_dummies(X[["Category", "Sex"]])
+    X = X.drop(columns=["Category", "Sex"]).merge(
+        X_tmp, left_index=True, right_index=True
+    )
     # since we have non-existent values we fill them with 0s
     X = X.fillna(0)
 
@@ -108,14 +112,19 @@ def liver_disorders(file_path="./datasets/liver_disorders.data", pca_bool=True):
     @return: processed liver disorders dataset according to pca_bool, None as no labels exist
     """
 
-    liver_disorders = pd.read_csv(file_path, sep=',', names=[
-        "Mean Corpuscular Volume",
-        "Alkaline Phosphotase",
-        "Alamine Aminotransferase",
-        "Aspartate Aminotransferase",
-        "Gamma-Glutamyl Transpeptidase",
-        "Number of Half-Pint Equivalents of Alcoholic Beaverages Drunk per Day",
-        "Selector"])
+    liver_disorders = pd.read_csv(
+        file_path,
+        sep=",",
+        names=[
+            "Mean Corpuscular Volume",
+            "Alkaline Phosphotase",
+            "Alamine Aminotransferase",
+            "Aspartate Aminotransferase",
+            "Gamma-Glutamyl Transpeptidase",
+            "Number of Half-Pint Equivalents of Alcoholic Beaverages Drunk per Day",
+            "Selector",
+        ],
+    )
 
     # drop null values
     liver_disorders = liver_disorders.dropna()
@@ -152,9 +161,8 @@ def get_components(data):
 
     pca = PCA()
     pca.fit(data)
-    for i in range(0, len(pca.explained_variance_ratio_.cumsum())-1):
+    for i in range(0, len(pca.explained_variance_ratio_.cumsum()) - 1):
         if pca.explained_variance_ratio_.cumsum()[i] >= 0.8:
-            return i+1
+            return i + 1
         else:
             pass
-

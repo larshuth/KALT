@@ -1,16 +1,17 @@
 import numpy as np
-import streamlit as st
-import dataset_tranformations
 import plot_clustering
-import pandas as pd
-import matplotlib.pyplot as plt
 
-from sklearn.cluster import DBSCAN, MeanShift, KMeans, AgglomerativeClustering, estimate_bandwidth
-from sklearn.metrics import silhouette_score
+from sklearn.cluster import (
+    DBSCAN,
+    MeanShift,
+    KMeans,
+    AgglomerativeClustering
+)
+from sklearn.metrics import davies_bouldin_score, jaccard_score, silhouette_score, rand_score, cluster
 
 
 def density_based_spatial_clustering_of_applications_with_noise(
-        dataset_x, dbscan_params, dataset_y=None
+    dataset_x, dbscan_params, dataset_y=None
 ):
     """
     Performs density-based clustering of applications with noise on datasets transformed as we as a group we agreed
@@ -20,9 +21,10 @@ def density_based_spatial_clustering_of_applications_with_noise(
     @param dataset_y: labels of the dataset as an array (not required, default = none)
     @param dbscan_params: epsilon neighborhood and cluster neighborhood as required for dbscan
     """
-    db = DBSCAN(eps=dbscan_params['epsilon_neighborhood'], min_samples=dbscan_params['clustering_neighborhood']).fit(
-        dataset_x
-    )
+    db = DBSCAN(
+        eps=dbscan_params["epsilon_neighborhood"],
+        min_samples=dbscan_params["clustering_neighborhood"],
+    ).fit(dataset_x)
     core_samples_mask = np.zeros_like(db.labels_, dtype=bool)
     core_samples_mask[db.core_sample_indices_] = True
 
@@ -47,7 +49,7 @@ def mean_shift(data, meanshift_params):
     @return mean shift instance, index of cluster each data point belongs to, number of clusters
     """
 
-    mean_shift = MeanShift(bandwidth=meanshift_params['bandwidth'])
+    mean_shift = MeanShift(bandwidth=meanshift_params["bandwidth"])
 
     mean_shift.fit(data)
     labels = mean_shift.labels_
@@ -68,8 +70,8 @@ def k_Means(dataset_x, k_means_params):
     @param k_means_params: parameters for the algorithm
     @return kmeans instance, index of cluster each data point belongs to, number of clusters
     """
-    n_clusters = k_means_params['clusters']
-    kmeans = KMeans(n_clusters=k_means_params['clusters'])
+    n_clusters = k_means_params["clusters"]
+    kmeans = KMeans(n_clusters=k_means_params["clusters"])
     kmeans.fit(dataset_x)
     labels = kmeans.labels_
     return kmeans, labels, n_clusters
@@ -82,7 +84,7 @@ def optimal_cluster_count(dataset_x):
     for k in range(3, kmax + 1):
         kmeans = KMeans(n_clusters=k).fit(dataset_x)
         labels = kmeans.labels_
-        sil.append(silhouette_score(dataset_x, labels, metric='euclidean'))
+        sil.append(silhouette_score(dataset_x, labels, metric="euclidean"))
 
     return int(np.argmax(sil) + 3)
 
@@ -96,11 +98,11 @@ def ahc_algo(data, ahc_algo_params):
     @param show_scatter: if you want to show the results though scattering the datapoints
     @param n_clusters: if you want plot the scattered data use n_clusters to show n clusters
     """
-    n_clusters = ahc_algo_params['n_clusters']
-    link = ahc_algo_params['link']
+    n_clusters = ahc_algo_params["n_clusters"]
+    link = ahc_algo_params["link"]
 
     # for scatter
-    cluster = AgglomerativeClustering(n_clusters, affinity='euclidean', linkage=link)
+    cluster = AgglomerativeClustering(n_clusters, affinity="euclidean", linkage=link)
     cluster.fit_predict(data)
 
     labels = cluster.labels_
@@ -115,200 +117,32 @@ def estimate_clusters_ahc(data, link, clusters):
     plot_clustering.show_estimated_clusters_ahc(model, clusters)
 
 
-def single_algo(db_scan_string, algorithms, plotting_algorithms, datasets, dataset_choice, dataset_start_epsilons, dataset_max_epsilons):
-
-    st.write("### Compare the parameters of a single algorithm.")
-    
-    algorithm_choice = st.selectbox("Which algorithm?", tuple(alg for alg in algorithms))
-
-    pca_string = st.selectbox("Use PCA for cluster calculation?", ("Yes", "No"))
-    if pca_string == "Yes":
-        pca_bool = True
-    else:
-        pca_bool = False
-
-    if algorithm_choice == db_scan_string:
-        max_epsilon = dataset_max_epsilons[dataset_choice]
-        start_epsilon = dataset_start_epsilons[dataset_choice]
-
-        epsilon = st.slider(
-            "Epsilon Neighborhood", min_value=0.05, max_value=max_epsilon, value=start_epsilon, step=0.05
-        )
-        clustering_neighborhood = st.slider(
-            "Min Neighborhood Size", min_value=1.0, max_value=15.0, value=5.0, step=1.0
-        )
-        algo_parameters = {
-            'epsilon_neighborhood': epsilon,
-            'clustering_neighborhood': clustering_neighborhood
-        }
-    elif algorithm_choice == "Mean Shift":
-        # for mean shift
-        bandwidth = st.slider(
-            'Bandwidth', min_value=1.0, max_value=4.0,
-            value=float(round(estimate_bandwidth(datasets[dataset_choice](pca_bool=pca_bool)[0]), 2))
-        )
-        algo_parameters = {
-            'bandwidth': bandwidth,
-        }
-    elif algorithm_choice == "k-Means":
-        # k-Means
-        n_clusters = st.slider(
-            'Clusters', min_value=1, max_value=8, step=1,
-            value=optimal_cluster_count(datasets[dataset_choice](pca_bool=pca_bool)[0])
-        )
-        algo_parameters = {
-            'clusters': n_clusters
-        }
-    elif algorithm_choice == "Agglomerative Hierarchical Clustering":
-        # for hierarchical clustering
-        print("I selected ahc_algo.")
-
-        linkage = st.selectbox("Choose the linkage", ("ward", "average", "complete/maximum", "single"))
-
-        df = pd.DataFrame({"ward": ["minimizes the variance of the clusters being merged"],
-                           "average": ["minimizes the variance of the clusters being merged"],
-                           "complete/maximum": [
-                               "linkage uses the maximum distances between all observations of the two sets"],
-                           "single": ["uses the minimum of the distances between all observations of the two sets"]})
-        df.index = [""] * len(df)
-        st.write(df[linkage])
-
-        if linkage == "complete/maximum":
-            linkage = "complete"
-
-        show_cluster = st.slider("Show n clusters", min_value=2, max_value=8,
-                                 value=4, step=1)
-        x, y = datasets[dataset_choice](pca_bool=pca_bool)
-        estimate_clusters_ahc(x, linkage, show_cluster)
-
-        algo_parameters = {
-            'link': linkage,
-            'n_clusters': show_cluster
-        }
-
-    x, y = datasets[dataset_choice](pca_bool=pca_bool)
-
-    fitted_data, labels, n_clusters = algorithms[algorithm_choice](
-        x, algo_parameters
-    )
-
-    fig = plt.figure()
-    plotting_algorithms[algorithm_choice](fitted_data, labels, n_clusters, x)
-    st.pyplot(fig)
-
-
-def all_algo(db_scan_string, algorithms, plotting_algorithms, datasets, dataset_choice, dataset_start_epsilons):
-
-    st.write("### Compare all four algorithms.")
-    x, y = datasets[dataset_choice](pca_bool=True)
-    fig = plt.figure()
-
-    for algo, i in zip(algorithms, range(1, len(algorithms)+1)):
-        if algo == "Mean Shift":
-            algo_parameters = {
-                "bandwidth": estimate_bandwidth(datasets[dataset_choice](pca_bool=True)[0])
-            }
-        elif algo == "Agglomerative Hierarchical Clustering":
-            algo_parameters = {
-                "link": "ward",
-                "n_clusters": 4
-            }
-        elif algo == "DBSCAN":
-            algo_parameters = {
-                "epsilon_neighborhood": dataset_start_epsilons[dataset_choice],
-                "clustering_neighborhood": 5
-            }
-        elif algo == "k-Means":
-            algo_parameters = { 
-                "clusters": optimal_cluster_count(datasets[dataset_choice](pca_bool=True)[0])
-            }
-        fitted_data, labels, n_clusters = algorithms[algo](x, algo_parameters)
-        plt.subplot(2, 2, i)
-        plotting_algorithms[algo](fitted_data, labels, n_clusters, x)
-
-    plt.tight_layout()
-    st.pyplot(fig)
-   
-
-
-def main(algorithm="dbscan", dataset="Happiness and alcohol", pca_bool=True):
-    print("pick a god and pray")
-
-    sid = st.sidebar
-    page = sid.radio("Choose Comparison", ('All Algorithms', 'Single Algorithm'))
-
-    sid.markdown("---")
-
-    sid.header("About")
-    t1 = "Here will be described what this page is to be used for."
-    sid.markdown(t1, unsafe_allow_html=True)
-
-    sid.markdown("---")
-
-    sid.header("Creators")
-    sid.markdown('''This is a KALT project. The project members are:
-        \n Katharina Dahmann
-        \n Alicia Wirth
-        \n Lars Huth
-        \n Tolga Tel''')
-
-    sid.markdown("---")
-
-    db_scan_string = 'DBSCAN'
-
-    algorithms = {
-        db_scan_string: density_based_spatial_clustering_of_applications_with_noise,
-        "Mean Shift": mean_shift,
-        "k-Means": k_Means,
-        "Agglomerative Hierarchical Clustering": ahc_algo
-    }
-    plotting_algorithms = {
-        db_scan_string: plot_clustering.plotting_dbscan,
-        "Mean Shift": plot_clustering.plotting_mean_shift,
-        "k-Means": plot_clustering.plotting_kmeans,
-        "Agglomerative Hierarchical Clustering": plot_clustering.plotting_ahc
-    }
-
-    datasets = {
-        "Happiness and alcohol": dataset_tranformations.happiness_alcohol_consumption,
-        "Seeds": dataset_tranformations.fixseeds,
-        "HCV dataset": dataset_tranformations.hcvdataset,
-        "Liver disorders": dataset_tranformations.liver_disorders
-    }
-
-    dataset_max_epsilons = {
-        "Happiness and alcohol": 0.8,
-        "Seeds": 0.8,
-        "HCV dataset": 5.0,
-        "Liver disorders": 2.3
-    }
-
-    dataset_start_epsilons = {
-        "Happiness and alcohol": 0.4,
-        "Seeds": 0.5,
-        "HCV dataset": 2.5,
-        "Liver disorders": 0.8
-    }
-
-    st.write(
-        """
-    # Sata Dience.
-
-    Colleration?
-    Culstering?
+def purity_score(labels_true, labels_pred):
     """
-    )
+    Purity Metric as described in https://stackoverflow.com/questions/34047540/python-clustering-purity-metric.
 
-    dataset_choice = st.selectbox("Which dataset?", tuple(ds for ds in datasets))
+    :param y_true:
+    :param y_pred:
+    :return: metric of purity
+    """
+    # compute contingency matrix (also called confusion matrix)
+    contingency_matrix = cluster.contingency_matrix(labels_true, labels_pred)
+    # return purity
+    return np.sum(np.amax(contingency_matrix, axis=0)) / np.sum(contingency_matrix)
 
-    # page display
-    if page == "All Algorithms":
-        all_algo(db_scan_string, algorithms, plotting_algorithms, datasets, dataset_choice, dataset_start_epsilons)
+
+def evaluation(datapoints, labels_pred, labeled=False, labels_real=None):
+    if labeled:
+        # Davies Bouldin
+        davies_bouldin = davies_bouldin_score(datapoints, labels_pred)
+        # Dunn
+        dunn = None
+        # Silhouette Coefficient
+        silhouette = silhouette_score(datapoints, labels_pred)
     else:
-        single_algo(db_scan_string, algorithms, plotting_algorithms, datasets, dataset_choice, dataset_start_epsilons, dataset_max_epsilons)
-
-    return 0
-
-
-if __name__ == "__main__":
-    main()
+        # purity
+        purity = purity_score(labels_real, labels_pred)
+        # Rand
+        rand = rand_score(labels_real, labels_pred)
+        # Jaccard
+        jaccard = jaccard_score(labels_real, labels_pred)
