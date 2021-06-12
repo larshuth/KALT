@@ -8,6 +8,7 @@ from sklearn.cluster import (
     AgglomerativeClustering
 )
 from sklearn.metrics import davies_bouldin_score, jaccard_score, silhouette_score, rand_score, cluster
+from dunnindex.dunn_sklearn import dunn
 
 
 def density_based_spatial_clustering_of_applications_with_noise(
@@ -133,16 +134,20 @@ def purity_score(labels_true, labels_pred):
 
 def evaluation(datapoints, labels_pred, labeled=False, labels_real=None):
     if labeled:
-        # Davies Bouldin
-        davies_bouldin = davies_bouldin_score(datapoints, labels_pred)
-        # Dunn
-        dunn = None
-        # Silhouette Coefficient
-        silhouette = silhouette_score(datapoints, labels_pred)
-    else:
         # purity
         purity = purity_score(labels_real, labels_pred)
         # Rand
         rand = rand_score(labels_real, labels_pred)
         # Jaccard
-        jaccard = jaccard_score(labels_real, labels_pred)
+        jaccard = jaccard_score(labels_real, labels_pred, average='macro')
+        return {'purity': purity, 'rand': rand, 'jaccard': jaccard}
+    else:
+        # Davies Bouldin
+        davies_bouldin = davies_bouldin_score(datapoints, labels_pred)
+        # Silhouette Coefficient
+        silhouette = silhouette_score(datapoints, labels_pred)
+        # Dunn
+        pairwise_distances = np.array(list(np.array(list(np.linalg.norm(i - j) for i in datapoints)) for j in datapoints))
+        dunn_ = dunn(labels_pred, pairwise_distances)
+        return {'davies': davies_bouldin, 'silhouette': silhouette, 'dunn': dunn_}
+

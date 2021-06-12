@@ -121,6 +121,8 @@ def single_algo(
     plotting_algorithms[algorithm_choice](fitted_data, labels, n_clusters, x)
     st.pyplot(fig)
 
+    clustering_algorithms.evaluation(x, labels, False, y)
+
 
 def all_algo(
     db_scan_string,
@@ -134,6 +136,13 @@ def all_algo(
     st.write("### Compare all four algorithms.")
     x, y = datasets[dataset_choice](pca_bool=True)
     fig = plt.figure()
+
+    external_validation = False
+
+    if not external_validation:
+        results = pd.DataFrame({'davies': list(), 'silhouette': list(), 'dunn': list()})
+    else:
+        results = pd.DataFrame({'davies': list(), 'silhouette': list(), 'dunn': list()})
 
     for algo, i in zip(algorithms, range(1, len(algorithms) + 1)):
         if algo == "Mean Shift":
@@ -159,8 +168,13 @@ def all_algo(
         plt.subplot(2, 2, i)
         plotting_algorithms[algo](fitted_data, labels, n_clusters, x)
 
+        scores = clustering_algorithms.evaluation(x, labels, external_validation, y)
+        results = results.append(pd.DataFrame(scores), index=algo)
+
     plt.tight_layout()
     st.pyplot(fig)
+
+    st.dataframe(results)
 
 
 def main():
