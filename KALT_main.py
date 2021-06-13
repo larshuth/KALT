@@ -121,6 +121,7 @@ def single_algo(
     st.pyplot(fig)
 
     clustering_algorithms.evaluation(x, labels, False, y)
+    return
 
 
 def all_algo(
@@ -137,9 +138,15 @@ def all_algo(
     fig = plt.figure()
 
     external_validation = False
+    if dataset_choice == 'Seeds':
+        evaluation_type = st.selectbox("Type of cluster evaluation:", ("Internal", "external"))
+        if evaluation_type == "Internal":
+            external_validation = False
+        else:
+            external_validation = True
 
-    if not external_validation:
-        results = pd.DataFrame({'davies': list(), 'silhouette': list(), 'dunn': list()})
+    if external_validation:
+        results = pd.DataFrame({'purity': list(), 'rand': list(), 'jaccard': list()})
     else:
         results = pd.DataFrame({'davies': list(), 'silhouette': list(), 'dunn': list()})
 
@@ -175,6 +182,7 @@ def all_algo(
     st.pyplot(fig)
 
     st.dataframe(results)
+    return
 
 
 def main():
