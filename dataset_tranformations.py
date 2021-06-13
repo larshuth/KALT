@@ -117,8 +117,8 @@ def liver_disorders(file_path="./datasets/liver_disorders.data", pca_bool=True):
         sep=",",
         names=[
             "Mean Corpuscular Volume",
-            "Alkaline Phosphotase",
-            "Alamine Aminotransferase",
+            "Alkaline Phosphatase",
+            "Alanine Aminotransferase",
             "Aspartate Aminotransferase",
             "Gamma-Glutamyl Transpeptidase",
             "Number of Half-Pint Equivalents of Alcoholic Beaverages Drunk per Day",
