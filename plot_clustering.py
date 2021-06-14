@@ -107,7 +107,7 @@ def plotting_kmeans(kmeans, labels, n_clusters, data):
 
 
 def plotting_ahc(ahc_algo, labels, n_clusters, data):
-    fig = plt.figure(1)
+    #fig = plt.figure(1)
 
     colors = cycle("bcmrgykbgrcmykbgrcmykbgrcmyk")
     for k, col in zip(range(-1, n_clusters), colors):
