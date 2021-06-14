@@ -81,7 +81,7 @@ def hcvdataset(file_path="./datasets/hcvdat0.csv", pca_bool=True):
         X_tmp, left_index=True, right_index=True
     )
     # since we have non-existent values we fill them with 0s
-    X = X.fillna(0)
+    X = X.fillna(X.mean())
 
     """still unsure, if standardscaler should be performed generally or not"""
     # Standardize features by removing the mean and scaling to unit variance
