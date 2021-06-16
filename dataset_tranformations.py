@@ -123,12 +123,14 @@ def liver_disorders(file_path="./datasets/liver_disorders.data", pca_bool=True):
             "Aspartate Aminotransferase",
             "Gamma-Glutamyl Transpeptidase",
             "Number of Half-Pint Equivalents of Alcoholic Beaverages Drunk per Day",
-            "Selector",
+            "Selector"
         ],
     )
 
     # drop null values
     liver_disorders = liver_disorders.dropna()
+    # drop duplicates
+    liver_disorders = liver_disorders.drop_duplicates()
     # drop "Selector" column since it was only used to split the data into train/test sets
     liver_disorders = liver_disorders.drop("Selector", axis=1)
 
