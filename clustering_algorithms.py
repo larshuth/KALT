@@ -45,8 +45,10 @@ def mean_shift(data, meanshift_params):
     Performs Mean Shift clustering on given dataset.
     Based on:
     https://scikit-learn.org/stable/modules/generated/sklearn.cluster.MeanShift.html
+
     @param data: processed dataset (e.g. liver disorders dataset)
-    @param meanshift_params['bandwidth']: distance of kernel function or size of "window", either automatically estimated or given by user
+    @param meanshift_params: parameters used for mean shift, has a single key 'bandwidth': 
+        distance of kernel function or size of 'window', either automatically estimated or given by user
     @return mean shift instance, index of cluster each data point belongs to, number of clusters
     """
 

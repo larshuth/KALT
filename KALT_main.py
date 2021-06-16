@@ -21,6 +21,19 @@ def single_algo(
     dataset_start_epsilons,
     dataset_max_epsilons,
 ):
+    """
+    Displays the single algorithm page. Each algorithm can individually be applied on each data set and be plotted. 
+    Users can choose the data set, algorithm and parameters specific to their chosen algorithm.
+
+    @param db_scan_string: "DBSCAN"
+    @param algorithms: Dictionary containing the clustering algorithms of the clustering_algorithms module
+    @param plotting_algorithms: Dictionary containing the plotting functions of each clustering algorithm of the plot_clustering module
+    @param datasets: Dictionary containing the data sets of the data_transformation module
+    @param dataset_choice: String containing the user-chosen data set
+    @param dataset_start_epsilons: Dictionary containing the start epsilon values for each data set for the DBSCAN algorithm
+    @param dataset_max_epsilons: Dictionary containing the maximum eplison values for each data set for the DBSCAN algorithm
+    @return 
+    """
 
     st.write("### Compare the parameters of a single algorithm.")
 
@@ -132,6 +145,18 @@ def all_algo(
     dataset_choice,
     dataset_start_epsilons,
 ):
+    """
+    Displays the all algorithms page. Each algorithm will be applied to each data set with pre-set parameters and be plotted next to each other. 
+    Users can choose the data set to apply the algorithms on.
+
+    @param db_scan_string: "DBSCAN"
+    @param algorithms: Dictionary containing the clustering algorithms of the clustering_algorithms module
+    @param plotting_algorithms: Dictionary containing the plotting functions of each clustering algorithm of the plot_clustering module
+    @param datasets: Dictionary containing the data sets of the data_transformation module
+    @param dataset_choice: String containing the user-chosen data set
+    @param dataset_start_epsilons: Dictionary containing the start epsilon values for each data set for the DBSCAN algorithm
+    @return 
+    """
 
     st.write("### Compare all four algorithms.")
     x, y = datasets[dataset_choice](pca_bool=True)
@@ -186,6 +211,13 @@ def all_algo(
 
 
 def main():
+    """
+    Main function providing headline, sidebar and properties used for clustering and plotting. If radiobutton "All Algorithms" is selected, 
+    the corresponding page will be displayed by calling all_algo(). Similarly, single_algo() will be called by choosing the "Single Algorithm" page.
+
+    @return 0
+    """
+
     print("pick a god and pray")
 
     sid = st.sidebar
@@ -232,6 +264,7 @@ def main():
         "Liver disorders": dataset_tranformations.liver_disorders,
     }
 
+    # for DBSCAN
     dataset_max_epsilons = {
         "Happiness and alcohol": 0.8,
         "Seeds": 0.8,
