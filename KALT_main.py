@@ -25,7 +25,7 @@ def single_algo(
     st.write("### Compare the parameters of a single algorithm.")
 
     algorithm_choice = st.selectbox(
-        "Which algorithm?", tuple(alg for alg in algorithms)
+        "Choose algorithm:", tuple(alg for alg in algorithms)
     )
 
     pca_string = st.selectbox("Use PCA for cluster calculation?", ("Yes", "No"))
@@ -202,10 +202,10 @@ def main():
     sid.header("Creators")
     sid.markdown(
         """This is a KALT project. The project members are:
-        \n Katharina Dahmann
-        \n Alicia Wirth
-        \n Lars Huth
-        \n Tolga Tel"""
+        \n **K**atharina Dahmann
+        \n **A**licia Wirth
+        \n **L**ars Huth
+        \n **T**olga Tel"""
     )
 
     sid.markdown("---")
@@ -248,14 +248,14 @@ def main():
 
     st.write(
         """
-    # Sata Dience.
-
-    Colleration?
-    Culstering?
+    # Principles of Data Science.
+    Summer 2021 - Prof. Wiese
+    
+    ## Assignment for comparing clustering algorithm. 
     """
     )
 
-    dataset_choice = st.selectbox("Which dataset?", tuple(ds for ds in datasets))
+    dataset_choice = st.selectbox("Choose dataset:", tuple(ds for ds in datasets))
 
     # page display
     if page == "All Algorithms":

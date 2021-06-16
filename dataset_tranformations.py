@@ -82,6 +82,7 @@ def hcvdataset(file_path="./datasets/hcvdat0.csv", pca_bool=True):
     )
     # since we have non-existent values we fill them with 0s
     X = X.fillna(X.mean())
+    X = X.drop(columns=["Sex_f", "Sex_m", "Category_0s=suspect Blood Donor"])
 
     """still unsure, if standardscaler should be performed generally or not"""
     # Standardize features by removing the mean and scaling to unit variance

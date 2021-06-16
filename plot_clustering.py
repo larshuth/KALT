@@ -55,7 +55,8 @@ def plotting_mean_shift(mean_shift, labels, n_clusters, data):
 
 def plotting_dbscan(dbscan, labels, n_clusters, data, x_var="", y_var=""):
     """
-    Ploting of the "Happiness and Alcohol Consumption" dataset, based on
+    Displays 2D-plot of dbscans.
+    Based on:
     https://www.geeksforgeeks.org/implementing-dbscan-algorithm-using-sklearn/
     """
 
@@ -107,7 +108,7 @@ def plotting_kmeans(kmeans, labels, n_clusters, data):
 
 
 def plotting_ahc(ahc_algo, labels, n_clusters, data):
-    fig = plt.figure(1)
+    #fig = plt.figure(1)
 
     colors = cycle("bcmrgykbgrcmykbgrcmykbgrcmyk")
     for k, col in zip(range(-1, n_clusters), colors):
