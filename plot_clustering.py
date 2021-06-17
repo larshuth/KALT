@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+from matplotlib import cm
 import streamlit as st
 from itertools import cycle
 import numpy as np
@@ -162,4 +163,40 @@ def show_estimated_clusters_ahc(model, clusters):
     plot_dendrogram(model, truncate_mode="lastp", p=clusters)
     plt.xlabel("Number of points in node.")
     plt.ylabel("Distances between new clusters.")
+    st.pyplot(fig)
+
+
+def evaluation_plot(results):
+    results_t = results.T
+
+    # print out the pure values
+    st.dataframe(results)
+
+    metrics_optimum = {
+        'purity': 'bigger better', 'rand': 'bigger better', 'jaccard': 'bigger better',
+        'davies': 'lower better', 'silhouette': 'bigger better', 'dunn': 'bigger better'
+    }
+
+    names = ["DBSCAN", "Mean Shift", "k-Means", "Agglomerative\nHierarchical\nClustering"]
+
+    fig = plt.figure()
+
+    counter = 1
+    for index, metric in results_t.iterrows():
+        metric_l = list(metric)
+        if metrics_optimum[index] == 'bigger better' and index != 'davies':
+            colors = cm.RdYlGn([y / float(max(metric_l)) for y in metric_l])
+        else:
+            colors = cm.RdYlGn_r([((y - float(min(metric_l))) / float(max(metric_l))) for y in metric_l])
+
+        ax = plt.subplot(310 + counter)
+        plt.bar(list(dict(metric)), metric_l, color=colors)
+        plt.ylabel('Score')
+        ax.set_title(index)
+        if counter < 3:
+            plt.xticks([], [])
+        else:
+            plt.xticks(list(dict(metric)), names, rotation='horizontal')
+        counter += 1
+
     st.pyplot(fig)

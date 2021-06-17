@@ -1,3 +1,5 @@
+import email.contentmanager
+
 import streamlit as st
 
 import dataset_tranformations
@@ -6,6 +8,7 @@ import clustering_algorithms
 
 import pandas as pd
 import matplotlib.pyplot as plt
+from matplotlib import cm
 
 from sklearn.cluster import (
     estimate_bandwidth,
@@ -144,6 +147,7 @@ def all_algo(
     datasets,
     dataset_choice,
     dataset_start_epsilons,
+    secret_lars_lever
 ):
     """
     Displays the all algorithms page. Each algorithm will be applied to each data set with pre-set parameters and be plotted next to each other. 
@@ -196,17 +200,22 @@ def all_algo(
                 )
             }
         fitted_data, labels, n_clusters = algorithms[algo](x, algo_parameters)
+        print(set(labels), labels)
         plt.subplot(2, 2, i)
         plotting_algorithms[algo](fitted_data, labels, n_clusters, x)
 
-        scores = pd.DataFrame(clustering_algorithms.evaluation(x, labels, external_validation, y))
+        scores = pd.DataFrame(clustering_algorithms.evaluation(x, labels, external_validation, y, secret_lars_lever))
         results = pd.concat([results, scores], ignore_index=True)
     
-    results = results.rename(index={0: db_scan_string, 1: "Mean Shift", 2: "k-Means", 3: "Agglomerative Hierarchical Clustering"})
     plt.tight_layout()
     st.pyplot(fig)
 
-    st.dataframe(results)
+    # plotting the evaluation of our results
+    results = results.rename(
+        index={0: db_scan_string, 1: "Mean Shift", 2: "k-Means", 3: "Agglomerative Hierarchical Clustering"})
+
+    plot_clustering.evaluation_plot(results)
+
     return
 
 
@@ -241,6 +250,7 @@ def main():
     )
 
     sid.markdown("---")
+    secret_lars_lever = sid.checkbox('', value=False, key=None, help=None)
 
     db_scan_string = "DBSCAN"
 
@@ -299,6 +309,7 @@ def main():
             datasets,
             dataset_choice,
             dataset_start_epsilons,
+            secret_lars_lever
         )
     else:
         single_algo(

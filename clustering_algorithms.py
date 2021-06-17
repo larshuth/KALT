@@ -134,7 +134,27 @@ def purity_score(labels_true, labels_pred):
     return np.sum(np.amax(contingency_matrix, axis=0)) / np.sum(contingency_matrix)
 
 
-def evaluation(datapoints, labels_pred, labeled=False, labels_real=None):
+def work_with_noise(datapoints, labels_pred, labeled, labels_real):
+    if -1 in labels_pred:
+        not_noise = list(label != -1 for label in labels_pred)
+        datapoints_without_noise = list(datapoints[i] for i in range(len(datapoints)) if not_noise[i])
+        labels_pred_without_noise = list(labels_pred[i] for i in range(len(labels_pred)) if not_noise[i])
+        if labeled:
+            labels_real_without_noise = list(labels_real[i] for i in range(len(labels_real)) if not_noise[i])
+        else:
+            labels_real_without_noise = labels_real
+
+    else:
+        datapoints_without_noise = datapoints
+        labels_pred_without_noise = labels_pred
+        labels_real_without_noise = labels_real
+    return datapoints_without_noise, labels_pred_without_noise, labels_real_without_noise
+
+
+def evaluation(datapoints, labels_pred, labeled=False, labels_real=None, secret_lars_lever=False):
+    if secret_lars_lever:
+        datapoints, labels_pred, labels_real = work_with_noise(datapoints, labels_pred, labeled, labels_real)
+
     if labeled:
         # purity
         purity = purity_score(labels_real, labels_pred)
