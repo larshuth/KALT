@@ -245,14 +245,16 @@ def main():
     sid.markdown("---")
 
     sid.header("About")
-    t1 = "Here will be described what this page is to be used for."
+    t1 = "The web application practically examines the algorithms DBSCAN, Mean Shift, k-Means and Hierarchical Agglomerative Clustering further by giving the option to apply them on different data sets. \
+        Therefore, the algorithms are compared and evaluated under the 'All Algorithms' page though can also be examined individually on the 'Single Algorithm' page on which users are eligible to play around \
+        with their specific parameters."
     sid.markdown(t1, unsafe_allow_html=True)
 
     sid.markdown("---")
 
     sid.header("Creators")
     sid.markdown(
-        """This is a KALT project. The project members are:
+        """This project is created by KALT:
         \n **K**atharina Dahmann
         \n **A**licia Wirth
         \n **L**ars Huth
