@@ -70,17 +70,24 @@ def single_algo(
         }
     elif algorithm_choice == "Mean Shift":
         # for mean shift
+        if dataset_choice == "Happiness and alcohol":
+            estimated_bandwidth = round(
+                estimate_bandwidth(datasets[dataset_choice](pca_bool=True)[0], quantile=0.18),
+                2
+            )
+        else:
+            estimated_bandwidth = round(
+                estimate_bandwidth(datasets[dataset_choice](pca_bool=pca_bool)[0]),
+                2
+            )
+
         bandwidth = st.slider(
             "Bandwidth",
-            min_value=1.0,
+            min_value=0.5,
             max_value=4.0,
-            value=float(
-                round(
-                    estimate_bandwidth(datasets[dataset_choice](pca_bool=pca_bool)[0]),
-                    2,
-                )
-            ),
+            value=float(estimated_bandwidth)
         )
+
         algo_parameters = {
             "bandwidth": bandwidth,
         }
@@ -181,11 +188,15 @@ def all_algo(
 
     for algo, i in zip(algorithms, range(1, len(algorithms) + 1)):
         if algo == "Mean Shift":
+            if dataset_choice == "Happiness and alcohol":
+                estimated_bandwidth = estimate_bandwidth(datasets[dataset_choice](pca_bool=True)[0], quantile=0.18)
+            else:
+                estimated_bandwidth = estimate_bandwidth(datasets[dataset_choice](pca_bool=True)[0])
+
             algo_parameters = {
-                "bandwidth": estimate_bandwidth(
-                    datasets[dataset_choice](pca_bool=True)[0]
-                )
+                "bandwidth": estimated_bandwidth
             }
+
         elif algo == "Agglomerative Hierarchical Clustering":
             algo_parameters = {"link": "ward", "n_clusters": 4}
         elif algo == "DBSCAN":
@@ -229,7 +240,7 @@ def main():
     print("pick a god and pray")
 
     sid = st.sidebar
-    page = sid.radio("Choose Comparison", ("All Algorithms", "Single Algorithm"))
+    page = sid.radio("Choose page:", ("All Algorithms", "Single Algorithm"))
 
     sid.markdown("---")
 
@@ -297,7 +308,7 @@ def main():
     """
     )
 
-    dataset_choice = st.selectbox("Choose dataset:", tuple(ds for ds in datasets))
+    dataset_choice = st.selectbox("Choose data set:", tuple(ds for ds in datasets))
 
     # page display
     if page == "All Algorithms":

@@ -150,8 +150,6 @@ def liver_disorders(file_path="./datasets/liver_disorders.data", pca_bool=True):
     if pca_bool:
         scaler = StandardScaler()
         data_scaled = scaler.fit_transform(liver_disorders)
-        # kriege normalized atm nur ein cluster :(
-        # data_scaled = preprocessing.normalize(data_scaled)
 
         components = get_components(data_scaled)
         pca = PCA(n_components=components)
