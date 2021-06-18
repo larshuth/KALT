@@ -101,9 +101,9 @@ def single_algo(
             value=clustering_algorithms.optimal_cluster_count(datasets[dataset_choice](pca_bool=pca_bool)[0]),
         )
         algo_parameters = {"clusters": n_clusters}
-    elif algorithm_choice == "Agglomerative Hierarchical Clustering":
+    elif algorithm_choice == "Hierarchical Agglomerative Clustering":
         # for hierarchical clustering
-        print("I selected ahc_algo.")
+        print("I selected hac_algo.")
 
         linkage = st.selectbox(
             "Choose the linkage", ("ward", "average", "complete/maximum", "single")
@@ -131,7 +131,7 @@ def single_algo(
             "Show n clusters", min_value=2, max_value=8, value=4, step=1
         )
         x, y = datasets[dataset_choice](pca_bool=pca_bool)
-        clustering_algorithms.estimate_clusters_ahc(x, linkage, show_cluster)
+        clustering_algorithms.estimate_clusters_hac(x, linkage, show_cluster)
 
         algo_parameters = {"link": linkage, "n_clusters": show_cluster}
 
@@ -197,7 +197,7 @@ def all_algo(
                 "bandwidth": estimated_bandwidth
             }
 
-        elif algo == "Agglomerative Hierarchical Clustering":
+        elif algo == "Hierarchical Agglomerative Clustering":
             algo_parameters = {"link": "ward", "n_clusters": 4}
         elif algo == "DBSCAN":
             algo_parameters = {
@@ -222,7 +222,7 @@ def all_algo(
 
     # plotting the evaluation of our results
     results = results.rename(
-        index={0: db_scan_string, 1: "Mean Shift", 2: "k-Means", 3: "Agglomerative Hierarchical Clustering"})
+        index={0: db_scan_string, 1: "Mean Shift", 2: "k-Means", 3: "Hierarchical Agglomerative Clustering"})
 
     plot_clustering.evaluation_plot(results)
 
@@ -268,13 +268,13 @@ def main():
         db_scan_string: clustering_algorithms.density_based_spatial_clustering_of_applications_with_noise,
         "Mean Shift": clustering_algorithms.mean_shift,
         "k-Means": clustering_algorithms.k_Means,
-        "Agglomerative Hierarchical Clustering": clustering_algorithms.ahc_algo,
+        "Hierarchical Agglomerative Clustering": clustering_algorithms.hac_algo,
     }
     plotting_algorithms = {
         db_scan_string: plot_clustering.plotting_dbscan,
         "Mean Shift": plot_clustering.plotting_mean_shift,
         "k-Means": plot_clustering.plotting_kmeans,
-        "Agglomerative Hierarchical Clustering": plot_clustering.plotting_ahc,
+        "Hierarchical Agglomerative Clustering": plot_clustering.plotting_hac,
     }
 
     datasets = {

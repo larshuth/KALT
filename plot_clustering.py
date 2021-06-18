@@ -108,7 +108,7 @@ def plotting_kmeans(kmeans, labels, n_clusters, data):
     plt.grid(color="#fff")
 
 
-def plotting_ahc(ahc_algo, labels, n_clusters, data):
+def plotting_hac(hac_algo, labels, n_clusters, data):
     #fig = plt.figure(1)
 
     colors = cycle("bcmrgykbgrcmykbgrcmykbgrcmyk")
@@ -123,7 +123,7 @@ def plotting_ahc(ahc_algo, labels, n_clusters, data):
             markersize=8,
         )
 
-    plt.title(f"AHC - #clusters: {n_clusters}")
+    plt.title(f"HAC - #clusters: {n_clusters}")
     # according to the colour vector defined
     ax = plt.gca()
     ax.spines["right"].set_visible(False)
@@ -156,7 +156,7 @@ def plot_dendrogram(model, **kwargs):
     dendrogram(linkage_matrix, **kwargs)
 
 
-def show_estimated_clusters_ahc(model, clusters):
+def show_estimated_clusters_hac(model, clusters):
     # dendrogram
     fig = plt.figure(figsize=(15, 5))
     plt.title("Hierarchical Clustering Dendrogram")

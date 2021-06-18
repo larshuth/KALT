@@ -92,17 +92,17 @@ def optimal_cluster_count(dataset_x):
     return int(np.argmax(sil) + 3)
 
 
-def ahc_algo(data, ahc_algo_params):
+def hac_algo(data, hac_algo_params):
     """
     Fits the model while using allgomorative hierarchical clustering.
     Plots the result eaither by showing a dendogram, a scatter or both.
-    @param data: the data to be used for ahc algorithm
+    @param data: the data to be used for hac algorithm
     @param show_dendrogram: if you want to show the result through using a dandogram
     @param show_scatter: if you want to show the results though scattering the datapoints
     @param n_clusters: if you want plot the scattered data use n_clusters to show n clusters
     """
-    n_clusters = ahc_algo_params["n_clusters"]
-    link = ahc_algo_params["link"]
+    n_clusters = hac_algo_params["n_clusters"]
+    link = hac_algo_params["link"]
 
     # for scatter
     cluster = AgglomerativeClustering(n_clusters, affinity="euclidean", linkage=link)
@@ -113,11 +113,11 @@ def ahc_algo(data, ahc_algo_params):
     return cluster, labels, n_clusters
 
 
-def estimate_clusters_ahc(data, link, clusters):
+def estimate_clusters_hac(data, link, clusters):
     model = AgglomerativeClustering(distance_threshold=0, n_clusters=None, linkage=link)
     model = model.fit(data)
 
-    plot_clustering.show_estimated_clusters_ahc(model, clusters)
+    plot_clustering.show_estimated_clusters_hac(model, clusters)
 
 
 def purity_score(labels_true, labels_pred):
