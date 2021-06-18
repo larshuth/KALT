@@ -72,7 +72,7 @@ def single_algo(
         # for mean shift
         if dataset_choice == "Happiness and alcohol":
             estimated_bandwidth = round(
-                estimate_bandwidth(datasets[dataset_choice](pca_bool=True)[0], quantile=0.18),
+                estimate_bandwidth(datasets[dataset_choice](pca_bool=True)[0], quantile=0.15),
                 2
             )
         else:
@@ -189,7 +189,7 @@ def all_algo(
     for algo, i in zip(algorithms, range(1, len(algorithms) + 1)):
         if algo == "Mean Shift":
             if dataset_choice == "Happiness and alcohol":
-                estimated_bandwidth = estimate_bandwidth(datasets[dataset_choice](pca_bool=True)[0], quantile=0.18)
+                estimated_bandwidth = estimate_bandwidth(datasets[dataset_choice](pca_bool=True)[0], quantile=0.15)
             else:
                 estimated_bandwidth = estimate_bandwidth(datasets[dataset_choice](pca_bool=True)[0])
 
