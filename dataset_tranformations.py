@@ -1,12 +1,10 @@
 import numpy as np
-import matplotlib.pyplot as plt
 import pandas as pd
-import streamlit as st
+from pandas.api.types import CategoricalDtype
 
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
-from sklearn.preprocessing import normalize
-
+from sklearn.preprocessing import normalize, LabelEncoder, OneHotEncoder
 
 def happiness_alcohol_consumption(
     file_path="./datasets/HappinessAlcoholConsumption.csv", pca_bool=True
@@ -20,7 +18,21 @@ def happiness_alcohol_consumption(
     """
 
     x = pd.read_csv(file_path)
-    x = x.drop(["Country", "Region", "Hemisphere"], axis=1)
+    x.set_index("Country", inplace=True)
+
+    # cleaning typo
+    x.loc[x['Hemisphere'] == 'noth', 'Hemisphere'] = 'north'
+
+    # one hot encoding out categorical variables
+    categoricals = ['Region', 'Hemisphere']
+    for category in categoricals:
+        x = pd.concat([x, pd.get_dummies(x[category], prefix=category, drop_first=True)], axis=1)
+    x = x.drop(categoricals, axis=1)
+
+    # fixing the problem with , . loading as float in the GDP attribute
+    x['GDP_PerCapita'][x['GDP_PerCapita'] < 101] = x['GDP_PerCapita'][x['GDP_PerCapita'] < 101] * 1000
+
+    print(x.shape)
 
     # Scaling the data to bring all the attributes to a comparable level
     scaler = StandardScaler()

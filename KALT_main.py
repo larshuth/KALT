@@ -200,7 +200,6 @@ def all_algo(
                 )
             }
         fitted_data, labels, n_clusters = algorithms[algo](x, algo_parameters)
-        print(set(labels), labels)
         plt.subplot(2, 2, i)
         plotting_algorithms[algo](fitted_data, labels, n_clusters, x)
 
@@ -283,7 +282,7 @@ def main():
     }
 
     dataset_start_epsilons = {
-        "Happiness and alcohol": 0.4,
+        "Happiness and alcohol": 0.6,
         "Seeds": 0.5,
         "HCV dataset": 2.5,
         "Liver disorders": 0.8,

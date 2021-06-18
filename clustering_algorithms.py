@@ -164,12 +164,18 @@ def evaluation(datapoints, labels_pred, labeled=False, labels_real=None, secret_
         jaccard = jaccard_score(labels_real, labels_pred, average='macro')
         return {'purity': [purity], 'rand': [rand], 'jaccard': [jaccard]}
     else:
-        # Davies Bouldin
-        davies_bouldin = davies_bouldin_score(datapoints, labels_pred)
-        # Silhouette Coefficient
-        silhouette = silhouette_score(datapoints, labels_pred)
-        # Dunn
-        pairwise_distances = np.array(list(np.array(list(np.linalg.norm(i - j) for i in datapoints)) for j in datapoints))
-        dunn_ = dunn(labels_pred, pairwise_distances)
+        if len(set(labels_pred)) > 1:
+            # Davies Bouldin
+            davies_bouldin = davies_bouldin_score(datapoints, labels_pred)
+            # Silhouette Coefficient
+            silhouette = silhouette_score(datapoints, labels_pred)
+            # Dunn
+            pairwise_distances = np.array(
+                list(np.array(list(np.linalg.norm(i - j) for i in datapoints)) for j in datapoints))
+            dunn_ = dunn(labels_pred, pairwise_distances)
+        else:
+            davies_bouldin = max(list(np.linalg.norm(i - j) for i in datapoints for j in datapoints))
+            silhouette = 0
+            dunn_ = 0
         return {'davies': [davies_bouldin], 'silhouette': [silhouette], 'dunn': [dunn_]}
 
