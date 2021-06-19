@@ -1,6 +1,6 @@
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from pandas.api.types import CategoricalDtype
 
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
@@ -35,12 +35,13 @@ def happiness_alcohol_consumption(
     # Scaling the data to bring all the attributes to a comparable level
     scaler = StandardScaler()
     x_scaled = scaler.fit_transform(x)
+    x_normalized = normalize(x_scaled)
 
     if pca_bool:
-        components = get_components(x_scaled)
+        components = get_components(x_normalized)
         pca = PCA(n_components=components)
-        pca.fit_transform(x_scaled)
-        x_principal = pca.transform(x_scaled)
+        pca.fit_transform(x_normalized)
+        x_principal = pca.transform(x_normalized)
     else:
         x_principal = x_scaled
 
