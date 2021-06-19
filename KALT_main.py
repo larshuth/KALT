@@ -208,7 +208,8 @@ def all_algo(
             algo_parameters = {
                 "clusters": clustering_algorithms.optimal_cluster_count(
                     datasets[dataset_choice](pca_bool=True)[0]
-                )
+                ),
+                "random_state": 42
             }
         fitted_data, labels, n_clusters = algorithms[algo](x, algo_parameters)
         plt.subplot(2, 2, i)
