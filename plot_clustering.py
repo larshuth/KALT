@@ -85,6 +85,13 @@ def plotting_dbscan(dbscan, labels, n_clusters, data, x_var="", y_var=""):
 
 
 def plotting_kmeans(kmeans, labels, n_clusters, data):
+    """
+    Displays 2D-plot of k-Means clustering points.
+    @param kmenas: k-Means instance
+    @param labels: index of cluster each data point belongs to
+    @param n_clusters: number of clusters
+    @param data: processed data (e.g. seeds)
+    """
     fig = plt.figure(1)
 
     colors = cycle("bcmrgykbgrcmykbgrcmykbgrcmyk")
