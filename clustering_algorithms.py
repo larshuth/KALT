@@ -79,6 +79,11 @@ def k_Means(dataset_x, k_means_params):
 
 
 def optimal_cluster_count(dataset_x):
+    """
+    Uses the silhouette index for computing a cluster count for a certain dataset.
+    @param dataset_x: features of the dataset as an array (required)
+    @return estimated optimal cluster count
+    """
     sil = []
     kmax = 8
     # dissimilarity would not be defined for a single cluster, thus, minimum number of clusters should be 2
