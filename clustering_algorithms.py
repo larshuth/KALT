@@ -74,7 +74,7 @@ def k_Means(dataset_x, k_means_params):
     @return kmeans instance, index of cluster each data point belongs to, number of clusters
     """
     n_clusters = k_means_params["clusters"]
-    kmeans = KMeans(n_clusters=k_means_params["clusters"])
+    kmeans = KMeans(n_clusters=k_means_params["clusters"], random_state = k_means_params["random_state"])
     kmeans.fit(dataset_x)
     labels = kmeans.labels_
     return kmeans, labels, n_clusters
