@@ -177,7 +177,7 @@ def evaluation_plot(results):
         'davies': 'lower better', 'silhouette': 'bigger better', 'dunn': 'bigger better'
     }
 
-    names = ["DBSCAN", "Mean Shift", "k-Means", "Agglomerative\nHierarchical\nClustering"]
+    names = ["DBSCAN", "Mean Shift", "k-Means", "Hierarchical\nAgglomerative\nClustering"]
 
     fig = plt.figure()
 

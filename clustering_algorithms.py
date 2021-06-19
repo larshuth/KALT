@@ -35,8 +35,6 @@ def density_based_spatial_clustering_of_applications_with_noise(
     n_clusters_ = len(set(labels)) - (1 if -1 in labels else 0)
     n_noise_ = list(labels).count(-1)
 
-    print("Estimated number of clusters: %d" % n_clusters_)
-    print("Estimated number of noise points: %d" % n_noise_)
     return db, labels, n_clusters_
 
 

@@ -32,22 +32,17 @@ def happiness_alcohol_consumption(
     # fixing the problem with , . loading as float in the GDP attribute
     x['GDP_PerCapita'][x['GDP_PerCapita'] < 101] = x['GDP_PerCapita'][x['GDP_PerCapita'] < 101] * 1000
 
-    print(x.shape)
-
     # Scaling the data to bring all the attributes to a comparable level
     scaler = StandardScaler()
     x_scaled = scaler.fit_transform(x)
-    # Normalizing the data so that
-    # the data approximately follows a Gaussian distribution
-    x_normalized = normalize(x_scaled)
 
     if pca_bool:
-        components = get_components(x_normalized)
+        components = get_components(x_scaled)
         pca = PCA(n_components=components)
-        pca.fit_transform(x_normalized)
-        x_principal = pca.transform(x_normalized)
+        pca.fit_transform(x_scaled)
+        x_principal = pca.transform(x_scaled)
     else:
-        x_principal = x_normalized
+        x_principal = x_scaled
 
     return x_principal, None
 
