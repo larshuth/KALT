@@ -97,12 +97,13 @@ def optimal_cluster_count(dataset_x):
 
 def hac_algo(data, hac_algo_params):
     """
-    Fits the model while using allgomorative hierarchical clustering.
-    Plots the result eaither by showing a dendogram, a scatter or both.
-    @param data: the data to be used for hac algorithm
-    @param show_dendrogram: if you want to show the result through using a dandogram
-    @param show_scatter: if you want to show the results though scattering the datapoints
-    @param n_clusters: if you want plot the scattered data use n_clusters to show n clusters
+    Performs Hierarchical Agglomerative Clustering on a given data set.
+    Based on:
+    https://scikit-learn.org/stable/modules/generated/sklearn.cluster.AgglomerativeClustering.html
+    
+    @param data: the data to be used for hac algorithm as an array
+    @param hac_algo_params: parameters for the algorithm, namely the number of clusters and the linkage
+    @return: HAC model, labels of the model, number of clusters 
     """
     n_clusters = hac_algo_params["n_clusters"]
     link = hac_algo_params["link"]
@@ -117,6 +118,16 @@ def hac_algo(data, hac_algo_params):
 
 
 def estimate_clusters_hac(data, link, clusters):
+    """
+    This function uses the HAC algorithm on a given data set to show the results in a dedrogram.
+    The dendrogram will only show the biggest n clusters stored in parameter 'clusters'.
+    Based on:
+    https://scikit-learn.org/stable/modules/generated/sklearn.cluster.AgglomerativeClustering.html
+    
+    @param data: the preprocessed data set as an array
+    @param link: the linkage method to be used for HAC algorithm
+    @clusters: the number of the biggest clusters to be plotted in a dendrogram
+    """
     model = AgglomerativeClustering(distance_threshold=0, n_clusters=None, linkage=link)
     model = model.fit(data)
 
