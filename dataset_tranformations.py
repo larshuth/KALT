@@ -75,11 +75,14 @@ def fixseeds(file_path="./datasets/seeds_dataset.txt", pca_bool=True):
 
 def hcvdataset(file_path="./datasets/hcvdat0.csv", pca_bool=True):
     """
-    Returns the features, or the features with pca, and labels of the hcv dataset as a tuple of a np.array.
-    Please keep in mind that this dataset is unlabeled !!!
+    Returns the HCV dataset obtained from https://archive.ics.uci.edu/ml/datasets/HCV+data . 
+    If the variable pca_bool is true, then a dimensionality reduction with PCA was used, else the data just got standerdized.
+    Based on:
+    https://365datascience.com/tutorials/python-tutorials/pca-k-means/
 
-    @param file_path: please specify where the hcv dataset is located on your device
-    @param use_pca: if pca is desired
+    @param file_path: string for location of the HCV data set
+    @param use_pca: boolean value to decide whether sklearn's PCA should be applied or not
+    @return: processed HCV dataset according to pca_bool value, None as no labels exist
     """
 
     X = pd.read_csv(file_path, index_col=0)
@@ -112,7 +115,7 @@ def hcvdataset(file_path="./datasets/hcvdat0.csv", pca_bool=True):
 
 def liver_disorders(file_path="./datasets/liver_disorders.data", pca_bool=True):
     """
-    Returns the liver disorders dataset obained from https://archive.ics.uci.edu/ml/datasets/liver+disorders after possibly having reduced its dimensionality by using PCA.
+    Returns the liver disorders dataset obtained from https://archive.ics.uci.edu/ml/datasets/liver+disorders after possibly having reduced its dimensionality by using PCA.
     Based on:
     https://365datascience.com/tutorials/python-tutorials/pca-k-means/
 
