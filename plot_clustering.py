@@ -103,6 +103,13 @@ def plotting_dbscan(dbscan, labels, n_clusters, data, x_var="", y_var=""):
 
 
 def plotting_kmeans(kmeans, labels, n_clusters, data):
+    """
+    Displays 2D-plot of k-Means clustering points.
+    @param kmenas: k-Means instance
+    @param labels: index of cluster each data point belongs to
+    @param n_clusters: number of clusters
+    @param data: processed data (e.g. seeds)
+    """
     fig = plt.figure(1)
 
     colors = cycle("bcmrgykbgrcmykbgrcmykbgrcmyk")
@@ -127,7 +134,17 @@ def plotting_kmeans(kmeans, labels, n_clusters, data):
 
 
 def plotting_hac(hac_algo, labels, n_clusters, data):
-    #fig = plt.figure(1)
+    """
+    Displays 2D-plot of k-Means clustering points.
+    Based on:
+    https://matplotlib.org/
+    https://stackoverflow.com/questions/925024/how-can-i-remove-the-top-and-right-axis-in-matplotlib
+    
+    @param hac_algo: HAC instance/model
+    @param labels: index of cluster each data point belongs to
+    @param n_clusters: number of clusters
+    @param data: processed data
+    """
 
     colors = cycle("bcmrgykbgrcmykbgrcmykbgrcmyk")
     for k, col in zip(range(-1, n_clusters), colors):
@@ -152,8 +169,12 @@ def plotting_hac(hac_algo, labels, n_clusters, data):
 
 def plot_dendrogram(model, **kwargs):
     """
-    creates linkage matrix and then plots the dendrogram
+    Creates a linkage matrix and then creates a dendrogram.
+    Based on:
     https://scikit-learn.org/stable/auto_examples/cluster/plot_agglomerative_dendrogram.html
+    
+    @param model: HAC instance/model
+    @**kwargs: adjustable parameters for the dendrogram
     """
     # create the counts of samples under each node
     counts = np.zeros(model.children_.shape[0])
@@ -175,6 +196,12 @@ def plot_dendrogram(model, **kwargs):
 
 
 def show_estimated_clusters_hac(model, clusters):
+    """
+    Plots a dendrogram for the processed data. Shows only the n biggest clusters.
+    
+    @param model: HAC instance/model
+    @param clusters: integer value for n biggest clusters
+    """
     # dendrogram
     fig = plt.figure(figsize=(15, 5))
     plt.title("Hierarchical Clustering Dendrogram")

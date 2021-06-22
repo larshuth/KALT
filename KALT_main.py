@@ -100,7 +100,9 @@ def single_algo(
             step=1,
             value=clustering_algorithms.optimal_cluster_count(datasets[dataset_choice](pca_bool=pca_bool)[0]),
         )
-        algo_parameters = {"clusters": n_clusters}
+        algo_parameters = {"clusters": n_clusters,
+                           "random_state": 42
+                          }
     elif algorithm_choice == "Hierarchical Agglomerative Clustering":
         # for hierarchical clustering
         print("I selected hac_algo.")
