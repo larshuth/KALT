@@ -62,7 +62,7 @@ def single_algo(
             step=0.05,
         )
         clustering_neighborhood = st.slider(
-            "Min Neighborhood Size", min_value=1.0, max_value=15.0, value=5.0, step=1.0
+            "Min Neighborhood Size", min_value=2.0, max_value=15.0, value=5.0, step=1.0
         )
         algo_parameters = {
             "epsilon_neighborhood": epsilon,

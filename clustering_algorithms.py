@@ -12,30 +12,31 @@ from dunnindex.dunn_sklearn import dunn
 
 
 def density_based_spatial_clustering_of_applications_with_noise(
-    dataset_x, dbscan_params, dataset_y=None
+    dataset_x, dbscan_params=None
 ):
     """
     Performs density-based clustering of applications with noise on datasets transformed as we as a group we agreed
     upon. This code is based upon
     https://www.geeksforgeeks.org/implementing-dbscan-algorithm-using-sklearn/
     @param dataset_x: features of the dataset as an array (required)
-    @param dataset_y: labels of the dataset as an array (not required, default = none)
-    @param dbscan_params: epsilon neighborhood and cluster neighborhood as required for dbscan
+    @param dbscan_params: epsilon neighborhood and cluster neighborhood as required for dbscan (optional)
     """
+    if not dbscan_params:
+        dbscan_params = {
+            "epsilon_neighborhood": 0.3,
+            "clustering_neighborhood": 5
+        }
     db = DBSCAN(
         eps=dbscan_params["epsilon_neighborhood"],
         min_samples=dbscan_params["clustering_neighborhood"],
     ).fit(dataset_x)
-    core_samples_mask = np.zeros_like(db.labels_, dtype=bool)
-    core_samples_mask[db.core_sample_indices_] = True
-
     labels = db.labels_
 
     # Number of clusters in labels, ignoring noise if present.
-    n_clusters_ = len(set(labels)) - (1 if -1 in labels else 0)
-    n_noise_ = list(labels).count(-1)
+    n_clusters = len(set(labels)) - (1 if -1 in labels else 0)
+    n_noise = list(labels).count(-1)   # number of noise points
 
-    return db, labels, n_clusters_
+    return db, labels, n_clusters
 
 
 def mean_shift(data, meanshift_params):

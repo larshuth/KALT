@@ -16,14 +16,14 @@ def happiness_alcohol_consumption(
     https://www.geeksforgeeks.org/implementing-dbscan-algorithm-using-sklearn/
     https://365datascience.com/tutorials/python-tutorials/pca-k-means/
     """
-
+    # reading data
     x = pd.read_csv(file_path)
     x.set_index("Country", inplace=True)
 
-    # cleaning typo
+    # cleaning typo for Hemisphere attribute of Japan, South Korea, China, and Mongolia
     x.loc[x['Hemisphere'] == 'noth', 'Hemisphere'] = 'north'
 
-    # one hot encoding out categorical variables
+    # one-hot encoding out categorical variables
     categoricals = ['Region', 'Hemisphere']
     for category in categoricals:
         x = pd.concat([x, pd.get_dummies(x[category], prefix=category, drop_first=True)], axis=1)
@@ -36,14 +36,17 @@ def happiness_alcohol_consumption(
     scaler = StandardScaler()
     x_scaled = scaler.fit_transform(x)
     x_normalized = normalize(x_scaled)
+    print(x_normalized, x_normalized.shape)
 
+    # performing PCA if requested in the input
     if pca_bool:
         components = get_components(x_normalized)
+        print(components)
         pca = PCA(n_components=components)
         pca.fit_transform(x_normalized)
         x_principal = pca.transform(x_normalized)
     else:
-        x_principal = x_scaled
+        x_principal = x_normalized
 
     return x_principal, None
 

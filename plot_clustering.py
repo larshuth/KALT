@@ -15,7 +15,6 @@ def plotting_mean_shift(mean_shift, labels, n_clusters, data):
     https://matplotlib.org/
     https://stackoverflow.com/questions/925024/how-can-i-remove-the-top-and-right-axis-in-matplotlib
 
-
     @param mean_shift: mean shift instance
     @param labels: index of cluster each data point belongs to
     @param n_clusters: number of clusters
@@ -56,15 +55,34 @@ def plotting_mean_shift(mean_shift, labels, n_clusters, data):
 
 def plotting_dbscan(dbscan, labels, n_clusters, data, x_var="", y_var=""):
     """
-    Displays 2D-plot of dbscans.
+    Displays 2D-plot of dbscan's clustering.
     Based on:
-    https://www.geeksforgeeks.org/implementing-dbscan-algorithm-using-sklearn/
-    """
+    https://scikit-learn.org/stable/auto_examples/cluster/plot_mean_shift.html#sphx-glr-auto-examples-cluster-plot-mean-shift-py
+    but we do not require the centroids to be plotted differently
 
+    @param dbscan: isntance from the sklearn DBSCAN class
+    @param labels: index of cluster each data point belongs to
+    @param n_clusters: number of clusters
+    @param data: processed data (e.g. happiness and alcohol consumption)
+    """
     fig = plt.figure(1)
 
-    colors = cycle("bcmrgykbgrcmykbgrcmykbgrcmyk")
-    for k, col in zip(range(-1, n_clusters), colors):
+    # assigning noise the color black
+    k = -1
+    col = 'k'
+    my_members = labels == k
+    plt.plot(
+        data[my_members, 0],
+        data[my_members, 1],
+        col + ".",
+        markeredgecolor="#fff",
+        markeredgewidth=0.7,
+        markersize=8,
+    )
+
+    # now iterating over the remaining clusters
+    colors = cycle("cmrgby")
+    for k, col in zip(range(n_clusters), colors):
         my_members = labels == k
         plt.plot(
             data[my_members, 0],
