@@ -6,6 +6,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import normalize, LabelEncoder, OneHotEncoder
 
+
 def happiness_alcohol_consumption(
     file_path="./datasets/HappinessAlcoholConsumption.csv", pca_bool=True
 ):
@@ -15,6 +16,10 @@ def happiness_alcohol_consumption(
     The reduction of dimensionality is based on the work in the articles
     https://www.geeksforgeeks.org/implementing-dbscan-algorithm-using-sklearn/
     https://365datascience.com/tutorials/python-tutorials/pca-k-means/
+
+    @param file_path: path to the data set's csv file
+    @param pca_bool: Bool to indicate use of PCA on the data set
+    @return: features of the happiness and alcohol consumption dataset as numpy.ndarray
     """
     # reading data
     x = pd.read_csv(file_path)
@@ -36,7 +41,6 @@ def happiness_alcohol_consumption(
     scaler = StandardScaler()
     x_scaled = scaler.fit_transform(x)
     x_normalized = normalize(x_scaled)
-    print(x_normalized, x_normalized.shape)
 
     # performing PCA if requested in the input
     if pca_bool:

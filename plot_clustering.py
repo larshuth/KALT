@@ -53,7 +53,7 @@ def plotting_mean_shift(mean_shift, labels, n_clusters, data):
     plt.grid(color="#fff")
 
 
-def plotting_dbscan(dbscan, labels, n_clusters, data, x_var="", y_var=""):
+def plotting_dbscan(dbscan, labels, n_clusters, data):
     """
     Displays 2D-plot of dbscan's clustering.
     Based on:

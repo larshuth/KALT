@@ -168,6 +168,7 @@ def all_algo(
     @param datasets: Dictionary containing the data sets of the data_transformation module
     @param dataset_choice: String containing the user-chosen data set
     @param dataset_start_epsilons: Dictionary containing the start epsilon values for each data set for the DBSCAN algorithm
+    @param secret_lars_lever: Bool value indicating a modified approach for the evaluation
     @return 
     """
 
@@ -217,7 +218,10 @@ def all_algo(
         plt.subplot(2, 2, i)
         plotting_algorithms[algo](fitted_data, labels, n_clusters, x)
 
-        scores = pd.DataFrame(clustering_algorithms.evaluation(x, labels, external_validation, y, secret_lars_lever))
+        if algo == "DBSCAN":
+            scores = pd.DataFrame(clustering_algorithms.evaluation(x, labels, external_validation, y, secret_lars_lever))
+        else:
+            scores = pd.DataFrame(clustering_algorithms.evaluation(x, labels, external_validation, y, False))
         results = pd.concat([results, scores], ignore_index=True)
     
     plt.tight_layout()
@@ -240,8 +244,7 @@ def main():
     @return 0
     """
 
-    print("pick a god and pray")
-
+    # Build a sidebar for the web frontend from which to choose whether to execute all algorithms or a single slgorithm
     sid = st.sidebar
     page = sid.radio("Choose page:", ("All Algorithms", "Single Algorithm"))
 
@@ -269,12 +272,14 @@ def main():
 
     db_scan_string = "DBSCAN"
 
+    # our algorithms for clustering, algorithms for plotting, datasets
     algorithms = {
         db_scan_string: clustering_algorithms.density_based_spatial_clustering_of_applications_with_noise,
         "Mean Shift": clustering_algorithms.mean_shift,
         "k-Means": clustering_algorithms.k_Means,
         "Hierarchical Agglomerative Clustering": clustering_algorithms.hac_algo,
     }
+
     plotting_algorithms = {
         db_scan_string: plot_clustering.plotting_dbscan,
         "Mean Shift": plot_clustering.plotting_mean_shift,
@@ -289,7 +294,7 @@ def main():
         "Liver disorders": dataset_tranformations.liver_disorders,
     }
 
-    # for DBSCAN
+    # preset parameters for DBSCAN
     dataset_max_epsilons = {
         "Happiness and alcohol": 0.8,
         "Seeds": 0.8,
@@ -315,7 +320,7 @@ def main():
 
     dataset_choice = st.selectbox("Choose data set:", tuple(ds for ds in datasets))
 
-    # page display
+    # page display the chosen option
     if page == "All Algorithms":
         all_algo(
             db_scan_string,
@@ -341,4 +346,7 @@ def main():
 
 
 if __name__ == "__main__":
+    """
+    only call main() if this file es actively executed and not if it is e.g. imported
+    """
     main()

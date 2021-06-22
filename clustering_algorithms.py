@@ -18,14 +18,16 @@ def density_based_spatial_clustering_of_applications_with_noise(
     Performs density-based clustering of applications with noise on datasets transformed as we as a group we agreed
     upon. This code is based upon
     https://www.geeksforgeeks.org/implementing-dbscan-algorithm-using-sklearn/
-    @param dataset_x: features of the dataset as an array (required)
+    @param dataset_x: features of the dataset as an numpy.ndarray (required)
     @param dbscan_params: epsilon neighborhood and cluster neighborhood as required for dbscan (optional)
+    @return: DBSCAN.fit instance, , number of clusters in the clustering
     """
     if not dbscan_params:
         dbscan_params = {
             "epsilon_neighborhood": 0.3,
             "clustering_neighborhood": 5
         }
+    # creation of DBSCAN instance and clustering the data set
     db = DBSCAN(
         eps=dbscan_params["epsilon_neighborhood"],
         min_samples=dbscan_params["clustering_neighborhood"],
@@ -149,7 +151,16 @@ def purity_score(labels_true, labels_pred):
     return np.sum(np.amax(contingency_matrix, axis=0)) / np.sum(contingency_matrix)
 
 
-def work_with_noise(datapoints, labels_pred, labeled, labels_real):
+def work_with_noise(datapoints, labels_pred, labeled=False, labels_real=None):
+    """
+    DBSCAN labels all noise points with -1, which is interpreted as its own cluster by the evaluation metrics.
+    Using this function filters out the points labeled as noise from all givine inputs
+    :param datapoints: data set as array of numpy ndarrays
+    :param labels_pred: array of labels as assigned by the previously used clustering algorithm
+    :param labeled: Boolean value indicating whether there are real labels associated with the dataset
+    :param labels_real: array of labels as given in the original data set source
+    :return: input but all indices labeled as -1 in labels_pred filtered out
+    """
     if -1 in labels_pred:
         not_noise = list(label != -1 for label in labels_pred)
         datapoints_without_noise = list(datapoints[i] for i in range(len(datapoints)) if not_noise[i])
@@ -167,10 +178,20 @@ def work_with_noise(datapoints, labels_pred, labeled, labels_real):
 
 
 def evaluation(datapoints, labels_pred, labeled=False, labels_real=None, secret_lars_lever=False):
+    """
+    Evaluation of the input clustering using external (if labeled) or internal validation metrics.
+    :param datapoints: data set as array of numpy ndarrays
+    :param labels_pred: array of labels as assigned by the previously used clustering algorithm
+    :param labeled: Boolean value indicating whether there are real labels associated with the dataset
+    :param labels_real: array of labels as given in the original data set source
+    :param secret_lars_lever: Bool value indicating a modified approach for the evaluation
+    :return: Dictionary of calculated scores
+    """
     if secret_lars_lever:
         datapoints, labels_pred, labels_real = work_with_noise(datapoints, labels_pred, labeled, labels_real)
 
     if labeled:
+        # external validation methods (require real labels)
         # purity
         purity = purity_score(labels_real, labels_pred)
         # Rand
@@ -179,6 +200,8 @@ def evaluation(datapoints, labels_pred, labeled=False, labels_real=None, secret_
         jaccard = jaccard_score(labels_real, labels_pred, average='macro')
         return {'purity': [purity], 'rand': [rand], 'jaccard': [jaccard]}
     else:
+        # internal validation methods
+        # including safety net to avoid crashing when only one cluster is sent in to be evaluated.
         if len(set(labels_pred)) > 1:
             # Davies Bouldin
             davies_bouldin = davies_bouldin_score(datapoints, labels_pred)
