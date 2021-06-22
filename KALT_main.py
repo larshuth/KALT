@@ -70,7 +70,7 @@ def single_algo(
         }
     elif algorithm_choice == "Mean Shift":
         # for mean shift
-        if dataset_choice == "Happiness and alcohol":
+        if dataset_choice == "Happiness and Alcohol Consumption":
             estimated_bandwidth = round(
                 estimate_bandwidth(datasets[dataset_choice](pca_bool=True)[0], quantile=0.15),
                 2
@@ -191,7 +191,7 @@ def all_algo(
 
     for algo, i in zip(algorithms, range(1, len(algorithms) + 1)):
         if algo == "Mean Shift":
-            if dataset_choice == "Happiness and alcohol":
+            if dataset_choice == "Happiness and Alcohol Consumption":
                 estimated_bandwidth = estimate_bandwidth(datasets[dataset_choice](pca_bool=True)[0], quantile=0.15)
             else:
                 estimated_bandwidth = estimate_bandwidth(datasets[dataset_choice](pca_bool=True)[0])
@@ -288,7 +288,7 @@ def main():
     }
 
     datasets = {
-        "Happiness and alcohol": dataset_tranformations.happiness_alcohol_consumption,
+        "Happiness and Alcohol Consumption": dataset_tranformations.happiness_alcohol_consumption,
         "Seeds": dataset_tranformations.fixseeds,
         "HCV dataset": dataset_tranformations.hcvdataset,
         "Liver disorders": dataset_tranformations.liver_disorders,
@@ -296,14 +296,14 @@ def main():
 
     # preset parameters for DBSCAN
     dataset_max_epsilons = {
-        "Happiness and alcohol": 0.8,
+        "Happiness and Alcohol Consumption": 0.8,
         "Seeds": 0.8,
         "HCV dataset": 5.0,
         "Liver disorders": 2.3,
     }
 
     dataset_start_epsilons = {
-        "Happiness and alcohol": 0.6,
+        "Happiness and Alcohol Consumption": 0.6,
         "Seeds": 0.5,
         "HCV dataset": 2.5,
         "Liver disorders": 0.8,
