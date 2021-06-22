@@ -51,6 +51,7 @@ def plotting_mean_shift(mean_shift, labels, n_clusters, data):
     ax.set_facecolor("#eff2f7")
 
     plt.grid(color="#fff")
+    return
 
 
 def plotting_dbscan(dbscan, labels, n_clusters, data):
@@ -100,6 +101,7 @@ def plotting_dbscan(dbscan, labels, n_clusters, data):
     ax.spines["top"].set_visible(False)
     ax.set_facecolor("#eff2f7")
     plt.grid(color="#fff")
+    return
 
 
 def plotting_kmeans(kmeans, labels, n_clusters, data):
@@ -131,6 +133,7 @@ def plotting_kmeans(kmeans, labels, n_clusters, data):
     ax.spines["top"].set_visible(False)
     ax.set_facecolor("#eff2f7")
     plt.grid(color="#fff")
+    return
 
 
 def plotting_hac(hac_algo, labels, n_clusters, data):
@@ -165,6 +168,7 @@ def plotting_hac(hac_algo, labels, n_clusters, data):
     ax.spines["top"].set_visible(False)
     ax.set_facecolor("#eff2f7")
     plt.grid(color="#fff")
+    return
 
 
 def plot_dendrogram(model, **kwargs):
@@ -193,6 +197,7 @@ def plot_dendrogram(model, **kwargs):
     ).astype(float)
 
     dendrogram(linkage_matrix, **kwargs)
+    return
 
 
 def show_estimated_clusters_hac(model, clusters):
@@ -209,9 +214,16 @@ def show_estimated_clusters_hac(model, clusters):
     plt.xlabel("Number of points in node.")
     plt.ylabel("Distances between new clusters.")
     st.pyplot(fig)
+    return
 
 
 def evaluation_plot(results):
+    """
+    Plots 3 bar plots (with 4 bars each) in one figure. Coloring the bars according to the quality of the result.
+    Good for visually comparing the resulting scores of each algorithm with those of the other ones
+    :param results: dictionary of "scores name": score pairs
+    :return: nothing but plots the input
+    """
     results_t = results.T
 
     # print out the pure values
@@ -245,3 +257,4 @@ def evaluation_plot(results):
         counter += 1
 
     st.pyplot(fig)
+    return

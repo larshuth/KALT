@@ -346,7 +346,4 @@ def main():
 
 
 if __name__ == "__main__":
-    """
-    only call main() if this file es actively executed and not if it is e.g. imported
-    """
     main()
